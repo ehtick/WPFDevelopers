@@ -32,7 +32,7 @@ namespace WPFDevelopers.Samples.ExampleViews
             if (PART_NavMenu3D.SelectedItem == null) return;
             var item = PART_NavMenu3D.SelectedItem as NavMenu3DItem;
             if (item.Tag.ToString() != null)
-                Message.Push(item.Tag.ToString());
+                Toast.Push(item.Tag.ToString());
         }
     }
 }

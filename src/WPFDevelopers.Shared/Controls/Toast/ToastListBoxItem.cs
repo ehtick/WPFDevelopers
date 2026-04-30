@@ -6,15 +6,15 @@ using System.Windows.Data;
 
 namespace WPFDevelopers.Controls
 {
-    public class MessageListBoxItem : ListBoxItem
+    public class ToastListBoxItem : ListBoxItem
     {
-        public MessageBoxImage MessageType
+        public ToastImage ToastType
         {
-            get { return (MessageBoxImage)GetValue(MessageTypeProperty); }
-            set { SetValue(MessageTypeProperty, value); }
+            get { return (ToastImage)GetValue(ToastTypeProperty); }
+            set { SetValue(ToastTypeProperty, value); }
         }
-        public static readonly DependencyProperty MessageTypeProperty =
-            DependencyProperty.Register("MessageType", typeof(MessageBoxImage), typeof(MessageListBoxItem), new PropertyMetadata(MessageBoxImage.Information));
+        public static readonly DependencyProperty ToastTypeProperty =
+            DependencyProperty.Register("ToastType", typeof(ToastImage), typeof(ToastListBoxItem), new PropertyMetadata(ToastImage.Info));
 
         public bool IsCenter
         {
@@ -23,9 +23,9 @@ namespace WPFDevelopers.Controls
         }
 
         public static readonly DependencyProperty IsCenterProperty =
-            DependencyProperty.Register("IsCenter", typeof(bool), typeof(MessageListBoxItem), new PropertyMetadata(false));
+            DependencyProperty.Register("IsCenter", typeof(bool), typeof(ToastListBoxItem), new PropertyMetadata(false));
 
-        public MessageListBoxItem()
+        public ToastListBoxItem()
         {
             Loaded += OnMessageListBoxItem_Loaded;
         }

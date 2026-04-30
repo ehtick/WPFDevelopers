@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="WPFDevelopers.Samples.ExampleViews.MessageExample"
+    x:Class="WPFDevelopers.Samples.ExampleViews.ToastExample"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:WPFDevelopers.Samples.Controls"
@@ -12,7 +12,7 @@
     mc:Ignorable="d">
     <controls:CodeViewer Header="{Binding NavigateMenuItem.Name}">
         <StackPanel wd:PanelHelper.Spacing="2">
-            <GroupBox Header="Message Position">
+            <GroupBox Header="Toast Position">
                 <WrapPanel HorizontalAlignment="Center">
                     <RadioButton Checked="RadioButton_Checked" Content="Left" />
                     <RadioButton
@@ -32,27 +32,27 @@
                     Rows="1">
                     <Button
                         Click="AddButton_Click"
-                        Content="Info Message"
-                        Style="{StaticResource WD.SuccessPrimaryButton}"
+                        Content="Info Toast"
+                        Style="{StaticResource WD.PrimaryButton}"
                         Tag="Info" />
                     <Button
                         Click="AddButton_Click"
-                        Content="Error Message"
+                        Content="Error Toast"
                         Style="{StaticResource WD.DangerPrimaryButton}"
                         Tag="Error" />
                     <Button
                         Click="AddButton_Click"
-                        Content="Warning Message"
+                        Content="Warning Toast"
                         Style="{StaticResource WD.WarningPrimaryButton}"
                         Tag="Warning" />
                     <Button
                         Click="AddButton_Click"
-                        Content="Question Message"
-                        Style="{StaticResource WD.PrimaryButton}"
-                        Tag="Question" />
+                        Content="Success Toast"
+                        Style="{StaticResource WD.SuccessPrimaryButton}"
+                        Tag="Success" />
                     <Button
                         Click="AddButton_Click"
-                        Content="Long Message"
+                        Content="Long Toast"
                         Style="{StaticResource WD.SuccessPrimaryButton}"
                         Tag="Long" />
                     <Button
@@ -72,27 +72,27 @@
                     Rows="1">
                     <Button
                         Click="AddButtonDesktop_Click"
-                        Content="Info Message"
-                        Style="{StaticResource WD.SuccessPrimaryButton}"
+                        Content="Info Toast"
+                        Style="{StaticResource WD.PrimaryButton}"
                         Tag="Info" />
                     <Button
                         Click="AddButtonDesktop_Click"
-                        Content="Error Message"
+                        Content="Error Toast"
                         Style="{StaticResource WD.DangerPrimaryButton}"
                         Tag="Error" />
                     <Button
                         Click="AddButtonDesktop_Click"
-                        Content="Warning Message"
+                        Content="Warning Toast"
                         Style="{StaticResource WD.WarningPrimaryButton}"
                         Tag="Warning" />
                     <Button
                         Click="AddButtonDesktop_Click"
-                        Content="Question Message"
-                        Style="{StaticResource WD.PrimaryButton}"
-                        Tag="Question" />
+                        Content="Success Toast"
+                        Style="{StaticResource WD.SuccessPrimaryButton}"
+                        Tag="Success" />
                     <Button
                         Click="AddButtonDesktop_Click"
-                        Content="Long Message"
+                        Content="Long Toast"
                         Style="{StaticResource WD.SuccessPrimaryButton}"
                         Tag="Long" />
                     <Button Click="BtnDesktopClear_Click" Content="Clear" />
@@ -100,8 +100,8 @@
             </GroupBox>
         </StackPanel>
         <controls:CodeViewer.SourceCodes>
-            <controls:SourceCodeModel CodeSource="/WPFDevelopers.SamplesCode;component/ExampleViews/MessageExample.xaml" CodeType="Xaml" />
-            <controls:SourceCodeModel CodeSource="/WPFDevelopers.SamplesCode;component/ExampleViews/MessageExample.xaml.cs" CodeType="CSharp" />
+            <controls:SourceCodeModel CodeSource="/WPFDevelopers.SamplesCode;component/ExampleViews/ToastExample.xaml" CodeType="Xaml" />
+            <controls:SourceCodeModel CodeSource="/WPFDevelopers.SamplesCode;component/ExampleViews/ToastExample.xaml.cs" CodeType="CSharp" />
         </controls:CodeViewer.SourceCodes>
     </controls:CodeViewer>
 </UserControl>

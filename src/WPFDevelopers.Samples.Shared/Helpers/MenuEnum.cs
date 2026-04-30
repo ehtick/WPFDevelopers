@@ -77,7 +77,7 @@
         BreadCrumbBar,
         CropImage,
         Badge,
-        Message,
+        Toast,
         PathIcon,
         NumericBox,
         ColorPicker,
@@ -97,6 +97,9 @@
         GestureUnlock,
         AnimationGrid,
         AllPathIcon,
+        Dial,
+        SvgViewer,
+        DataGridFilter,
         VirtualizingWrapPanel,
         AcrylicBlur,
         TaskbarInfo

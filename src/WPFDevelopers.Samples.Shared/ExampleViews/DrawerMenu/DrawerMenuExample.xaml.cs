@@ -97,7 +97,7 @@ namespace WPFDevelopers.Samples.ExampleViews.DrawerMenu
             var selection = obj as DrawerMenuItem;
             if (selection != null) 
             {
-                Message.Push($"当前选中{selection.Text}", MessageBoxImage.Information);
+                Toast.Push($"当前选中{selection.Text}", ToastImage.Info);
             }
         });
 
@@ -106,7 +106,7 @@ namespace WPFDevelopers.Samples.ExampleViews.DrawerMenu
         {
             if(obj is bool isOpen)
             {
-                Message.Push(isOpen ? "打开": "关闭",MessageBoxImage.Information);
+                Toast.Push(isOpen ? "打开": "关闭", ToastImage.Info);
             }
         });
 

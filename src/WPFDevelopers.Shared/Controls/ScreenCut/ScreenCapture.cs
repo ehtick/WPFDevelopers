@@ -6,7 +6,7 @@ using System.Windows.Media.Imaging;
 
 namespace WPFDevelopers.Controls
 {
-    public class ScreenCapture
+    public sealed class ScreenCapture
     {
         /// <summary>
         /// 截图完成委托
@@ -40,6 +40,27 @@ namespace WPFDevelopers.Controls
         /// </summary>
         private ResourceDictionary _resources;
 
+        private bool _disposed;
+
+        private void Dispose()
+        {
+            if (_disposed) return;
+            _disposed = true;
+            foreach (var sc in ScreenCuts)
+            {
+                sc.CutCompleted -= ScreenCut_CutCompleted;
+                sc.CutCanceled -= ScreenCut_CutCanceled;
+                sc.CutFullPath -= ScreenCut_CutFullPath;
+                sc.Closed -= ScreenCut_Closed;
+                if (sc.IsVisible)
+                    sc.Close();
+            }
+            ScreenCuts.Clear();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            GC.Collect();
+        }
+
         public ScreenCapture(bool copyToClipboard = true)
         {
             if(System.Windows.Application.Current == null)
@@ -64,12 +85,14 @@ namespace WPFDevelopers.Controls
 
         private void ScreenCut_CutFullPath(string text)
         {
-            if(SnapSaveFullPath != null) SnapSaveFullPath(text); 
+            if(SnapSaveFullPath != null) SnapSaveFullPath(text);
+            Dispose();
         }
 
         private void ScreenCut_CutCanceled()
         {
             if (SnapCanceled != null) SnapCanceled();
+            Dispose();
         }
 
         public void Capture()
@@ -83,28 +106,21 @@ namespace WPFDevelopers.Controls
 
         private void ScreenCut_Closed(object sender, System.EventArgs e)
         {
-            if (ScreenCuts.Contains((ScreenCut)sender))
+            var screenCut = (ScreenCut)sender;
+            if (ScreenCuts.Contains(screenCut))
             {
-                ScreenCuts.Remove((ScreenCut)sender);
+                ScreenCuts.Remove(screenCut);
             }
-            CloseCutters();
-            ScreenCut.ClearCaptureScreenID();
+            Dispose();
         }
-        private void CloseCutters()
-        {
-            if (ScreenCuts.Count == 0) return;
-            while (ScreenCuts.Count > 0)
-            {
-                ScreenCuts[0].Close();
-            }
-            ScreenCuts.Clear();
-        }
+       
         private void ScreenCut_CutCompleted(CroppedBitmap bitmap)
         {
             if (SnapCompleted != null)
                 SnapCompleted(bitmap);
             if (_copyToClipboard)
                 System.Windows.Clipboard.SetImage(bitmap);
+            Dispose();
         }
     }
 }

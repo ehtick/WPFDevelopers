@@ -192,4 +192,13 @@
   <data name="Refresh" xml:space="preserve">
     <value>Refresh</value>
   </data>
+  <data name="Undo" xml:space="preserve">
+    <value>Undo(Ctrl+Z)</value>
+  </data>
+  <data name="InputWatermark" xml:space="preserve">
+    <value>Please enter content</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>Apply</value>
+  </data>
 </root>

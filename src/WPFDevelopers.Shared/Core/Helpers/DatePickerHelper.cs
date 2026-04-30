@@ -58,6 +58,29 @@ namespace WPFDevelopers.Helpers
                 FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                 OnSelectedDateTimeChanged));
 
+        public static readonly DependencyProperty ButtonPositionProperty =
+        DependencyProperty.RegisterAttached(
+            "ButtonPosition",
+            typeof(Position),
+            typeof(DatePickerHelper),
+            new PropertyMetadata(Position.Right, OnButtonPositionChanged));
+
+        private static void OnButtonPositionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DatePicker datePicker)
+            {
+                datePicker.Loaded += (s, args) =>
+                {
+                    if (datePicker.Template.FindName("PART_TextBoxContainer", datePicker) is FrameworkElement container)
+                    {
+                        var position = (Position)e.NewValue;
+                        container.Margin = position == Position.Left
+                            ? new Thickness(24, 0, 0, 0)
+                            : new Thickness(1, 0, 0, 0);
+                    }
+                };
+            }
+        }
 
         public static object GetWatermark(DependencyObject obj)
         {
@@ -125,6 +148,16 @@ namespace WPFDevelopers.Helpers
             obj.SetValue(SelectedDateTimeProperty, value);
         }
 
+        public static void SetButtonPosition(UIElement element, Position value)
+        {
+            element.SetValue(ButtonPositionProperty, value);
+        }
+
+        public static Position GetButtonPosition(UIElement element)
+        {
+            return (Position)element.GetValue(ButtonPositionProperty);
+        }
+
         private static void OnWatermarkChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is DatePicker datePicker)
@@ -169,7 +202,10 @@ namespace WPFDevelopers.Helpers
             {
                 var watermarkControl = d.Template.FindName("PART_Watermark", d) as ContentControl;
                 if (watermarkControl != null)
+                {
+                    watermarkControl.Margin = new Thickness(1, 0, 0, 0);
                     watermarkControl.Content = value;
+                }
             }
         }
 
@@ -180,7 +216,10 @@ namespace WPFDevelopers.Helpers
             {
                 var watermarkControl = textBox.Template.FindName("PART_Watermark", textBox) as ContentControl;
                 if (watermarkControl != null)
+                {
+                    watermarkControl.Margin = new Thickness(1, 0, 0, 0);
                     watermarkControl.Content = value;
+                }
             }
         }
 

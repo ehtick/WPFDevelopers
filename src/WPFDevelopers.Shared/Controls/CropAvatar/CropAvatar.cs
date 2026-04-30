@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,7 +16,7 @@ namespace WPFDevelopers.Controls
     [TemplatePart(Name = GridTemplateName, Type = typeof(SmallPanel))]
     [TemplatePart(Name = ReplaceButtonTemplateName, Type = typeof(Button))]
     [TemplatePart(Name = AddButtonTemplateName, Type = typeof(Button))]
-    public class CropAvatar : Control
+    public class CropAvatar : Control, IDisposable
     {
         private const string CanvasTemplateName = "PART_Canvas";
         private const string ImageTemplateName = "PART_Image";
@@ -33,6 +33,8 @@ namespace WPFDevelopers.Controls
         private BitmapFrame _bitmapFrame;
         private Canvas _canvas;
         private CroppedBitmap _crop;
+        private WriteableBitmap _cachedResult;
+        private bool _disposed = false;
         private SmallPanel _grid;
         private Image _image;
         private int _initialX, _initialY, _voffsetX, _voffsetY;
@@ -91,8 +93,15 @@ namespace WPFDevelopers.Controls
                 _addButton.Click -= OnAddButton_Click;
                 _addButton.Click += OnAddButton_Click;
             }
+            Unloaded -= OnCropAvatar_Unloaded;
+            Unloaded += OnCropAvatar_Unloaded;
         }
 
+        private void OnCropAvatar_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Dispose();
+        }
+       
         private void OnCanvas_Loaded(object sender, RoutedEventArgs e)
         {
             if (sender is Canvas canvas)
@@ -190,15 +199,31 @@ namespace WPFDevelopers.Controls
 
         private void InitialImage()
         {
+            CleanupOldResources();
             _vNewStartX = 0;
             _vNewStartY = 0;
             var uri = Helper.ImageUri();
             if (uri == null) return;
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.CacheOption = BitmapCacheOption.OnLoad;
-            bitmap.UriSource = uri;
-            bitmap.EndInit();
+            BitmapImage bitmap = null;
+            try
+            {
+                bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad; 
+                bitmap.UriSource = uri;
+                bitmap.EndInit();
+                if (bitmap.CanFreeze)
+                    bitmap.Freeze();
+            }
+            catch
+            {
+                throw;
+            }
+
+            if (bitmap == null || bitmap.Width == 0 || bitmap.Height == 0)
+            {
+                return;
+            }
             if (bitmap.Height > bitmap.Width)
             {
                 var scale = bitmap.Width / _path.Width;
@@ -252,6 +277,80 @@ namespace WPFDevelopers.Controls
                 _crop = new CroppedBitmap(_bitmapFrame, new Int32Rect(0, 0, _size, _size));
             }
             OutImageSource = _crop;
+        }
+
+        private void CleanupOldResources()
+        {
+            if (_bitmapFrame != null)
+            {
+                _bitmapFrame = null;
+            }
+
+            if (_crop != null)
+            {
+                _crop = null;
+            }
+
+#if NET40
+            Task.Factory.StartNew(() =>
+            {
+                GC.Collect(2);
+            });
+#else
+    Task.Run(() =>
+    {
+        GC.Collect(2, GCCollectionMode.Forced);
+    });
+#endif
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    CleanupOldResources();
+
+                    if (_image != null)
+                    {
+                        _image.Source = null;
+                    }
+                    if (_canvas != null)
+                    {
+                        _canvas.Loaded -= OnCanvas_Loaded;
+                    }
+                    if (_image != null)
+                    {
+                        _image.MouseDown -= OnImage_MouseDown;
+                        _image.MouseMove -= OnImage_MouseMove;
+                        _image.MouseUp -= OnImage_MouseUp;
+                        _image.MouseLeave -= OnImage_MouseLeave;
+                    }
+                    if (_replaceButton != null)
+                    {
+                        _replaceButton.Click -= OnReplaceButton_Click;
+                    }
+                    if (_addButton != null)
+                    {
+                        _addButton.Click -= OnAddButton_Click;
+                    }
+                    Unloaded -= OnCropAvatar_Unloaded;
+                }
+                _disposed = true;
+            }
+        }
+
+
+        ~CropAvatar()
+        {
+            Dispose(false);
         }
     }
 }

@@ -5,13 +5,13 @@ using WPFDevelopers.Helpers;
 
 namespace WPFDevelopers.Controls
 {
-    public sealed class MessageExt : Window
+    public sealed class ToastExt : Window
     {
-        private MessageListBox _listBox;
+        private ToastListBox _listBox;
         internal bool IsPosition;
         internal Position Position;
 
-        public MessageExt()
+        public ToastExt()
         {
             Resources = ThemeManager.Instance.Resources;
             SizeToContent = SizeToContent.Width;
@@ -24,7 +24,7 @@ namespace WPFDevelopers.Controls
             Topmost = true;
             if (_listBox == null)
             {
-                _listBox = new MessageListBox();
+                _listBox = new ToastListBox();
                 _listBox.SizeChanged -= ListBox_SizeChanged;
                 _listBox.SizeChanged += ListBox_SizeChanged;
                 Content = _listBox;
@@ -32,14 +32,14 @@ namespace WPFDevelopers.Controls
            
         }
 
-        internal void Push(string message, MessageBoxImage type = MessageBoxImage.Information,
+        internal void Push(string message, ToastImage type = ToastImage.Info,
                   bool center = false, IntPtr intPtr = default)
         {
             Rect targetArea = GetTargetArea(intPtr);
-            var messageItem = new MessageListBoxItem
+            var messageItem = new ToastListBoxItem
             {
                 Content = message,
-                MessageType = type,
+                ToastType = type,
                 IsCenter = center
             };
             _listBox.Items.Insert(0, messageItem);
@@ -60,7 +60,7 @@ namespace WPFDevelopers.Controls
             return SystemParameters.WorkArea;
         }
 
-        private void CalculateAndSetPosition(Rect targetArea, MessageListBoxItem item)
+        private void CalculateAndSetPosition(Rect targetArea, ToastListBoxItem item)
         {
             double x = 0;
             double y = 0;

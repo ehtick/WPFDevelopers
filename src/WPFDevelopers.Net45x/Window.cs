@@ -6,6 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Shell;
 using WPFDevelopers.Controls;
 using WPFDevelopers.Core.Helpers;
 using WPFDevelopers.Helpers;
@@ -68,6 +69,24 @@ namespace WPFDevelopers.Net45x
                 UseAeroCaptionButtons = false
             };
             System.Windows.Shell.WindowChrome.SetWindowChrome(this, _windowChrome);
+            StateChanged += OnWindow_StateChanged;
+        }
+
+        private void OnWindow_StateChanged(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowChrome.SetWindowChrome(this, new WindowChrome
+                {
+                    CaptionHeight = 40,
+                    GlassFrameThickness = new Thickness(0),
+                    NonClientFrameEdges = NonClientFrameEdges.Right
+                });
+            }
+            else
+            {
+                WindowChrome.SetWindowChrome(this, _windowChrome);
+            }
         }
 
         private void Resources_ThemeChanged(ThemeType currentTheme)

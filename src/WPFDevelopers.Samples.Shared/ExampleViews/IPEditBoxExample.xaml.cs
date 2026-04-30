@@ -17,7 +17,7 @@ namespace WPFDevelopers.Samples.ExampleViews
         {
             var text = myIPEditBox.Text;
             if (!string.IsNullOrWhiteSpace(text))
-                Message.Push(text, MessageBoxImage.Information);
+                Toast.Push(text, ToastImage.Info);
         }
     }
 }

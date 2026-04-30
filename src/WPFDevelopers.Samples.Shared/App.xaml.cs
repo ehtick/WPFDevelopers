@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using WPFDevelopers.Helpers;
 
 namespace WPFDevelopers.Samples
 {

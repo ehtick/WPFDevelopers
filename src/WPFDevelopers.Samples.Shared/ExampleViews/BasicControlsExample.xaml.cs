@@ -247,7 +247,7 @@ namespace WPFDevelopers.Samples.ExampleViews
         }
         private void BtnGetDateTime_Click(object sender, RoutedEventArgs e)
         {
-            Message.Push(CurrentDateTime.ToString("yyyy-MM-dd HH:mm:ss"));
+            Toast.Push(CurrentDateTime.ToString("yyyy-MM-dd HH:mm:ss"));
         }
     }
 }

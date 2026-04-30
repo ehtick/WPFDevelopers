@@ -172,4 +172,13 @@
   <data name="Refresh" xml:space="preserve">
     <value>刷新</value>
   </data>
+  <data name="Undo" xml:space="preserve">
+    <value>撤销(Ctrl+Z)</value>
+  </data>
+  <data name="InputWatermark" xml:space="preserve">
+    <value>请输入内容</value>
+  </data>
+  <data name="Apply" xml:space="preserve">
+    <value>应用</value>
+  </data>
 </root>

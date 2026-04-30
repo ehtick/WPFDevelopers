@@ -21,6 +21,15 @@
         <Setter Property="BorderBrush" Value="{DynamicResource WD.BaseBrush}" />
         <Setter Property="Background" Value="{DynamicResource WD.BackgroundBrush}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource WD.WindowBorderBrush}" />
+        <Setter Property="ContextMenu">
+            <Setter.Value>
+                <ContextMenu>
+                    <MenuItem Command="Copy" />
+                    <MenuItem Command="Paste" />
+                    <MenuItem Command="Cut" />
+                </ContextMenu>
+            </Setter.Value>
+        </Setter>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type TextBox}">

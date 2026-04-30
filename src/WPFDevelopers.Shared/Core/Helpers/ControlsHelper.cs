@@ -25,7 +25,10 @@ namespace WPFDevelopers.Helpers
             if (window == null)
                 if (Application.Current != null && Application.Current.Windows.Count > 0)
                     window = Application.Current.Windows.OfType<Window>().FirstOrDefault(o => o.IsActive);
-
+            if (window == null)
+                return;
+            if (window.WindowState != WindowState.Normal)
+                return;
             var doubleAnimation = new DoubleAnimation
             {
                 From = window.Left,

@@ -16,9 +16,9 @@ namespace WPFDevelopers.Controls
         [Description("WD.WindowMaximizeGeometry")] WindowMaximize,
         [Description("WD.WindowRestoreGeometry")] WindowRestore,
         [Description("WD.WindowCloseGeometry")] WindowClose,
-        [Description("WD.InformationGeometry")] Information,
+        [Description("WD.SuccessGeometry")] Success, 
         [Description("WD.WarningGeometry")] Warning,
-        [Description("WD.QuestionGeometry")] Question,
+        [Description("WD.InfoGeometry")] Info,
         [Description("WD.ErrorGeometry")] Error,
         [Description("WD.SmileyOutlineGeometry")] SmileyOutline,
         [Description("WD.BusGeometry")] Bus,
@@ -57,5 +57,7 @@ namespace WPFDevelopers.Controls
         [Description("WD.DateRangeRightGeometry")] DateRangeRight,
         [Description("WD.DateGeometry")] Date,
         [Description("WD.CopyGeometry")] Copy,
+        [Description("WD.UndoGeometry")] Undo,
+        [Description("WD.FilterGeometry")] Filter,
     }
 }

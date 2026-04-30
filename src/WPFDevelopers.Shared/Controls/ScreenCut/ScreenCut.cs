@@ -13,7 +13,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Windows.Threading;
+using WPFDevelopers.Core.Helpers;
 using WPFDevelopers.Helpers;
 using Brush = System.Windows.Media.Brush;
 using Brushes = System.Windows.Media.Brushes;
@@ -36,10 +36,25 @@ namespace WPFDevelopers.Controls
     {
         public static void GetDpi(this Screen screen, DpiType dpiType, out uint dpiX, out uint dpiY)
         {
+            dpiX = 96;
+            dpiY = 96;
+            if (!CanUsePerMonitorDpi())
+                return;
             var pnt = new System.Drawing.Point(screen.Bounds.Left + 1, screen.Bounds.Top + 1);
             var mon = MonitorFromPoint(pnt, 2);
             GetDpiForMonitor(mon, dpiType, out dpiX, out dpiY);
         }
+
+        public static bool CanUsePerMonitorDpi()
+        {
+            IntPtr hModule = Win32.LoadLibrary(Win32.Shcore);
+            if (hModule == IntPtr.Zero)
+                return false;
+            IntPtr procAddr = Win32.GetProcAddress(hModule, "GetDpiForMonitor");
+            Win32.FreeLibrary(hModule);
+            return procAddr != IntPtr.Zero;
+        }
+
         [DllImport(Win32.User32)]
         private static extern IntPtr MonitorFromPoint([In] System.Drawing.Point pt, [In] uint dwFlags);
         [DllImport(Win32.Shcore)]
@@ -82,6 +97,7 @@ namespace WPFDevelopers.Controls
     [TemplatePart(Name = SaveButtonTemplateName, Type = typeof(Button))]
     [TemplatePart(Name = CancelButtonTemplateName, Type = typeof(Button))]
     [TemplatePart(Name = CompleteButtonTemplateName, Type = typeof(Button))]
+    [TemplatePart(Name = UndoButtonTemplateName, Type = typeof(Button))]
     [TemplatePart(Name = RectangleRadioButtonTemplateName, Type = typeof(RadioButton))]
     [TemplatePart(Name = EllipseRadioButtonTemplateName, Type = typeof(RadioButton))]
     [TemplatePart(Name = ArrowRadioButtonTemplateName, Type = typeof(RadioButton))]
@@ -104,6 +120,7 @@ namespace WPFDevelopers.Controls
         private const string SaveButtonTemplateName = "PART_SaveButton";
         private const string CancelButtonTemplateName = "PART_CancelButton";
         private const string CompleteButtonTemplateName = "PART_CompleteButton";
+        private const string UndoButtonTemplateName = "PART_UndoButton";
         private const string RectangleRadioButtonTemplateName = "PART_RectangleRadioButton";
         private const string EllipseRadioButtonTemplateName = "PART_EllipseRadioButton";
         private const string ArrowRadioButtonTemplateName = "PART_ArrowRadioButton";
@@ -117,7 +134,7 @@ namespace WPFDevelopers.Controls
         private const string _tag = "Draw";
         private const int _width = 40;
         private Border _border, _editBar, _popupBorder;
-        private Button _saveButton, _cancelButton, _completeButton;
+        private Button _saveButton, _cancelButton, _completeButton, _undoButton;
         private Canvas _canvas;
 
         /// <summary>
@@ -202,6 +219,22 @@ namespace WPFDevelopers.Controls
         private Path _currentStrokeContainer = null;
         private List<Rectangle> _currentStrokeRectangles = new List<Rectangle>();
         private Stack<UIElement> _strokeHistory = new Stack<UIElement>();
+        private static readonly HashSet<string> PermanentElementNames = new HashSet<string>
+        {
+            "PART_LeftRectangle",
+            "PART_TopRectangle",
+            "PART_RightRectangle",
+            "PART_BottomRectangle",
+            "PART_Border",
+            "PART_EditBar",
+            "PART_Popup",
+            "PART_ColorPanelWrap",
+            "PART_BorderPopup"
+        };
+        private Point? _lastInkPoint = null;
+        private List<Point> _inkPoints = new List<Point>();
+        private const double MIN_DISTANCE = 2.0;
+        private const double SMOOTH_FACTOR = 0.3;
 
         public ScreenCut(int index)
         {
@@ -213,7 +246,6 @@ namespace WPFDevelopers.Controls
             ShowInTaskbar = false;
             WindowStyle = WindowStyle.None;
             WindowState = WindowState.Normal;
-            Opacity = 0;
             _screenDPI = GetScreenDPI(_screenIndex);
         }
         static ScreenCut()
@@ -225,13 +257,21 @@ namespace WPFDevelopers.Controls
         public void Dispose()
         {
             _canvas.Background = null;
-            GC.SuppressFinalize(this);
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             GC.Collect();
         }
+
         public static void ClearCaptureScreenID()
         {
             CaptureScreenID = -1;
         }
+        
+        ~ScreenCut()
+        {
+            Debug.WriteLine("~ScreenCut");
+        }
+
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -253,6 +293,9 @@ namespace WPFDevelopers.Controls
             _completeButton = GetTemplateChild(CompleteButtonTemplateName) as Button;
             if (_completeButton != null)
                 _completeButton.Click += ButtonComplete_Click;
+            _undoButton = GetTemplateChild(UndoButtonTemplateName) as Button;
+            if (_undoButton != null)
+                _undoButton.Click += OnUndoButton_Click;
             _rectangleRadioButton = GetTemplateChild(RectangleRadioButtonTemplateName) as RadioButton;
             if (_rectangleRadioButton != null)
                 _rectangleRadioButton.Click += RadioButtonRectangle_Click;
@@ -283,20 +326,50 @@ namespace WPFDevelopers.Controls
                 _wrapPanel.PreviewMouseDown += WrapPanel_PreviewMouseDown;
             Loaded += ScreenCut_Loaded;
             _controlTemplate = (ControlTemplate)FindResource("WD.PART_DrawArrow");
+            _screenCapture = CopyScreen();
+            using (var tempBitmap = _screenCapture)
+            {
+                var imageSource = ImagingHelper.CreateBitmapSourceFromBitmap(tempBitmap);
+                imageSource.Freeze();
+                var writeableBitmap = new WriteableBitmap(imageSource);
+                writeableBitmap.Freeze(); 
+                _canvas.Background = new ImageBrush(writeableBitmap);
+            }
+            _screenCapture?.Dispose();
+            _screenCapture = null;
+            TakeSnapshot();
+        }
+
+        private void OnUndoButton_Click(object sender, RoutedEventArgs e)
+        {
+            Undo();
         }
 
         protected override void OnClosed(EventArgs e)
         {
             base.OnClosed(e);
+            if (_adornerLayer != null && _screenCutAdorner != null)
+            {
+                _adornerLayer.Remove(_screenCutAdorner);
+                _screenCutAdorner = null;
+                _adornerLayer = null;
+            }
+            if (_canvas != null)
+            {
+                if (_canvas.Background is ImageBrush brush)
+                {
+                    brush.ImageSource = null;
+                }
+                _canvas.Background = null;
+                _canvas.Children.Clear();
+            }
+            _imageSnapshot = null;
             Dispose();
         }
        
         private void ScreenCut_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= ScreenCut_Loaded;
-            _canvas.Background = new ImageBrush(ImagingHelper.CreateBitmapSourceFromBitmap(CopyScreen()));
-            TakeSnapshot();
-            Opacity = 1;
         }
 
         private ScreenDPI GetScreenDPI(int screenIndex)
@@ -500,17 +573,64 @@ namespace WPFDevelopers.Controls
             {
                 if (_canvas.Children.Count > 0)
                     _canvas.Children.Remove(_frameworkElement);
+                SetUndoEnabled();
             }
             else if (e.KeyStates == Keyboard.GetKeyStates(Key.Z) && Keyboard.Modifiers == ModifierKeys.Control)
+            {
+                Undo();
+            }
+        }
+
+        void Undo()
+        {
+            try
             {
                 if (_screenCutMouseType == ScreenCutMouseType.DrawMosaic)
                 {
                     UndoLastStroke();
                     return;
                 }
-                if (_canvas.Children.Count > 0)
-                    _canvas.Children.Remove(_canvas.Children[_canvas.Children.Count - 1]);
-                
+
+                for (int i = _canvas.Children.Count - 1; i >= 0; i--)
+                {
+                    var element = _canvas.Children[i];
+                    if (element is FrameworkElement fe && !string.IsNullOrEmpty(fe.Name))
+                    {
+                        if (PermanentElementNames.Contains(fe.Name))
+                            continue;
+                    }
+                    if (element is Rectangle rect &&
+                        (rect.Name?.StartsWith("PART_") ?? false))
+                        continue;
+                    _canvas.Children.RemoveAt(i);
+                    break;
+                }
+                SetUndoEnabled();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        void SetUndoEnabled()
+        {
+            if (_undoButton != null)
+            {
+                bool hasUndoableElements = false;
+
+                foreach (UIElement element in _canvas.Children)
+                {
+                    if (element is FrameworkElement fe && !string.IsNullOrEmpty(fe.Name))
+                    {
+                        if (PermanentElementNames.Contains(fe.Name))
+                            continue;
+                    }
+                    hasUndoableElements = true;
+                    break;
+                }
+
+                _undoButton.IsEnabled = hasUndoableElements;
             }
         }
 
@@ -612,6 +732,7 @@ namespace WPFDevelopers.Controls
                             border.BorderThickness = new Thickness(0);
                             if (string.IsNullOrWhiteSpace(tb.Text))
                                 _canvas.Children.Remove(border);
+                            SetUndoEnabled();
                         }
                     };
                     _textBorder.SizeChanged += (s, e1) =>
@@ -637,6 +758,7 @@ namespace WPFDevelopers.Controls
                     };
                     _textBorder.Child = textBox;
                     _canvas.Children.Add(_textBorder);
+                    SetUndoEnabled();
                     textBox.Focus();
                     var x = _pointStart.Value.X;
 
@@ -698,6 +820,7 @@ namespace WPFDevelopers.Controls
                 96, 96, PixelFormats.Pbgra32);
 
             _imageSnapshot.Render(_canvas);
+            _imageSnapshot.Freeze();
         }
 
         private void DrawMosaicBlock(Point center, int blockSize, int brushSize)
@@ -729,7 +852,7 @@ namespace WPFDevelopers.Controls
                     Canvas.SetTop(block, y);
 
                    _canvas.Children.Add(block);
-
+                    SetUndoEnabled();
                     _currentStrokeRectangles.Add(block);
                 }
             }
@@ -741,6 +864,7 @@ namespace WPFDevelopers.Controls
             RemoveTemporaryRectangles();
             CreateStrokeContainer();
             _canvas.Children.Add(_currentStrokeContainer);
+            SetUndoEnabled();
             _strokeHistory.Push(_currentStrokeContainer);
             _currentStrokeContainer = null;
             _currentStrokeRectangles.Clear();
@@ -822,6 +946,7 @@ namespace WPFDevelopers.Controls
             {
                 _canvas.Children.Remove(rect);
             }
+            SetUndoEnabled();
         }
 
         private Color GetAreaAverageColor(Point center, int areaSize)
@@ -873,6 +998,7 @@ namespace WPFDevelopers.Controls
             {
                 var lastStroke = _strokeHistory.Pop();
                 _canvas.Children.Remove(lastStroke);
+                SetUndoEnabled();
             }
         }
 
@@ -889,20 +1015,15 @@ namespace WPFDevelopers.Controls
         private void DrwaInkControl(Point current)
         {
             CheckPoint(current);
-            if (current.X >= _rect.Left
-                &&
-                current.X <= _rect.Right
-                &&
-                current.Y >= _rect.Top
-                &&
-                current.Y <= _rect.Bottom)
+            if (current.X >= _rect.Left && current.X <= _rect.Right &&
+                current.Y >= _rect.Top && current.Y <= _rect.Bottom)
             {
                 if (_polyLine == null)
                 {
                     _polyLine = new Polyline();
                     _polyLine.Stroke = _currentBrush == null ? Brushes.Red : _currentBrush;
                     _polyLine.Cursor = Cursors.Hand;
-                    _polyLine.StrokeThickness = 3;
+                    _polyLine.StrokeThickness = 5;
                     _polyLine.StrokeLineJoin = PenLineJoin.Round;
                     _polyLine.StrokeStartLineCap = PenLineCap.Round;
                     _polyLine.StrokeEndLineCap = PenLineCap.Round;
@@ -915,10 +1036,64 @@ namespace WPFDevelopers.Controls
                         _frameworkElement.Opacity = .7;
                     };
                     _canvas.Children.Add(_polyLine);
+                    SetUndoEnabled();
+                    _inkPoints.Clear();
+                    _inkPoints.Add(current);
+                    _polyLine.Points.Add(current);
+                    _lastInkPoint = current;
+                    return;
                 }
 
-                _polyLine.Points.Add(current);
+                var distance = Point.Subtract(current, _lastInkPoint.Value).Length;
+
+                if (distance < MIN_DISTANCE)
+                    return;
+
+                _inkPoints.Add(current);
+                if (_inkPoints.Count >= 3)
+                {
+                    int iterations = (int)(SMOOTH_FACTOR * 3);
+                    iterations = Math.Max(1, Math.Min(3, iterations));
+                    var smoothedPoints = ChaikinSmooth(_inkPoints, 1);
+                    _polyLine.Points.Clear();
+                    foreach (var point in smoothedPoints)
+                    {
+                        _polyLine.Points.Add(point);
+                    }
+                }
+                else
+                {
+                    _polyLine.Points.Add(current);
+                }
+                _lastInkPoint = current;
             }
+        }
+
+        private List<Point> ChaikinSmooth(List<Point> points, int iterations)
+        {
+            if (points.Count < 3)
+                return new List<Point>(points);
+
+            var currentPoints = new List<Point>(points);
+
+            for (int iter = 0; iter < iterations; iter++)
+            {
+                var newPoints = new List<Point>();
+
+                newPoints.Add(currentPoints[0]);
+                for (int i = 0; i < currentPoints.Count - 1; i++)
+                {
+                    var p0 = currentPoints[i];
+                    var p1 = currentPoints[i + 1];
+                    var q = new Point(0.75 * p0.X + 0.25 * p1.X, 0.75 * p0.Y + 0.25 * p1.Y);
+                    var r = new Point(0.25 * p0.X + 0.75 * p1.X, 0.25 * p0.Y + 0.75 * p1.Y);
+                    newPoints.Add(q);
+                    newPoints.Add(r);
+                }
+                newPoints.Add(currentPoints[currentPoints.Count - 1]);
+                currentPoints = newPoints;
+            }
+            return currentPoints;
         }
 
         private void DrawArrowControl(Point current)
@@ -949,6 +1124,7 @@ namespace WPFDevelopers.Controls
                     _frameworkElement.Opacity = .7;
                 };
                 _canvas.Children.Add(_controlArrow);
+                SetUndoEnabled();
                 Canvas.SetLeft(_controlArrow, drawArrow.Left);
                 Canvas.SetTop(_controlArrow, drawArrow.Top - 7.5);
             }
@@ -1077,6 +1253,7 @@ namespace WPFDevelopers.Controls
                             _frameworkElement.Opacity = .7;
                         };
                         _canvas.Children.Add(_borderRectangle);
+                        SetUndoEnabled();
                     }
 
                     break;
@@ -1099,6 +1276,7 @@ namespace WPFDevelopers.Controls
                             _frameworkElement.Opacity = .7;
                         };
                         _canvas.Children.Add(_drawEllipse);
+                        SetUndoEnabled();
                     }
 
                     break;
@@ -1218,11 +1396,19 @@ namespace WPFDevelopers.Controls
             _isMouseUp = true;
             if (_screenCutMouseType != ScreenCutMouseType.Default)
             {
-                if (_screenCutMouseType == ScreenCutMouseType.MoveMouse)
-                    EditBarPosition();
-                else if(_screenCutMouseType == ScreenCutMouseType.DrawMosaic)
+                switch (_screenCutMouseType)
                 {
-                    CompleteCurrentStroke();
+                    case ScreenCutMouseType.MoveMouse:
+                        EditBarPosition();
+                        break;
+                    case ScreenCutMouseType.DrawMosaic:
+                        CompleteCurrentStroke();
+                        break;
+                    case ScreenCutMouseType.DrawInk:
+                        _lastInkPoint = null;
+                        _inkPoints.Clear();
+                        _polyLine = null;
+                        break;
                 }
 
                 if (_rectangleRadioButton.IsChecked != true

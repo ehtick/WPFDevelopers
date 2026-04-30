@@ -71,7 +71,6 @@
                             </MultiDataTrigger.Conditions>
                             <MultiDataTrigger.Setters>
                                 <Setter Property="Background" Value="{DynamicResource WD.BaseBrush}" />
-                                <Setter TargetName="PART_Border" Property="TextElement.FontWeight" Value="Bold" />
                                 <Setter TargetName="PART_Border" Property="TextElement.Foreground" Value="{DynamicResource WD.PrimaryBrush}" />
                             </MultiDataTrigger.Setters>
                         </MultiDataTrigger>
@@ -117,7 +116,7 @@
                         </Storyboard>
                     </ControlTemplate.Resources>
                     <Border
-                        Name="PART_Border"
+                        x:Name="PART_Border"
                         Width="{TemplateBinding Width}"
                         Height="{TemplateBinding Height}"
                         HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
@@ -127,19 +126,21 @@
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{Binding Path=(helpers:ElementHelper.CornerRadius), RelativeSource={RelativeSource TemplatedParent}}"
                         SnapsToDevicePixels="True">
-                        <Grid Grid.IsSharedSizeScope="True">
+                        <Grid Background="Transparent" Grid.IsSharedSizeScope="True">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="Auto" SharedSizeGroup="ComboBoxButton" />
                             </Grid.ColumnDefinitions>
                             <ScrollViewer
+                                x:Name="PART_TagScrollViewer"
                                 Margin="{TemplateBinding Padding}"
                                 HorizontalScrollBarVisibility="Disabled"
-                                VerticalScrollBarVisibility="Auto">
+                                VerticalScrollBarVisibility="Auto"
+                                Visibility="Collapsed">
                                 <controls:SimpleWrapPanel
                                     x:Name="PART_SimpleWrapPanel"
-                                    Spacing="2"
-                                    Visibility="Collapsed" />
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    Spacing="2" />
                             </ScrollViewer>
                             <TextBox
                                 Name="PART_EditableTextBox"
@@ -158,7 +159,8 @@
 
                             <TextBlock
                                 x:Name="PART_Watermark"
-                                Padding="{TemplateBinding Padding}"
+                                Margin="{TemplateBinding Padding}"
+                                Padding="1,0"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                 Background="Transparent"
@@ -184,7 +186,7 @@
                                 IsOpen="{Binding IsDropDownOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                 Placement="Bottom"
                                 PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                                StaysOpen="False">
+                                StaysOpen="True">
                                 <controls:SmallPanel
                                     x:Name="PART_DropDown"
                                     MinWidth="{TemplateBinding FrameworkElement.ActualWidth}"
@@ -286,7 +288,7 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="ShowType" Value="Tag">
-                            <Setter TargetName="PART_SimpleWrapPanel" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PART_TagScrollViewer" Property="Visibility" Value="Visible" />
                             <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="PART_SimpleWrapPanel" Property="MinHeight" Value="21.6" />
                         </Trigger>

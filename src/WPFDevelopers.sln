@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.3.32901.215
+# Visual Studio Version 18
+VisualStudioVersion = 18.5.11626.173 insiders
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WPFDevelopers.Samples40", "WPFDevelopers.Samples40\WPFDevelopers.Samples40.csproj", "{31F881A8-9DDF-4FC2-999B-D47BC25CB47D}"
 EndProject
@@ -80,9 +80,8 @@ Global
 		{88DD2697-4DF1-40DC-B33B-DE1FD9846800} = {2C729CA5-1110-40DA-8EF4-2A7549072C53}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {641F8D5D-5514-4C9A-9FAB-7FAF38D9C008}
-		RESX_NeutralResourcesLanguage = zh-CN
 		RESX_SaveFilesImmediatelyUponChange = False
+		SolutionGuid = {641F8D5D-5514-4C9A-9FAB-7FAF38D9C008}
 	EndGlobalSection
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		WPFDevelopers.Samples.Shared\WPFDevelopers.Samples.Shared.projitems*{31f881a8-9ddf-4fc2-999b-d47bc25cb47d}*SharedItemsImports = 5

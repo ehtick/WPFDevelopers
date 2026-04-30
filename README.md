@@ -21,21 +21,31 @@
 ### [码云](https://gitee.com/WPFDevelopersOrg) https://gitee.com/WPFDevelopersOrg  
 
 ### [ Wiki → Quick update in progress](https://github.com/WPFDevelopersOrg/WPFDevelopers/wiki)   
-###  Visual Studio 2022  
+###  Visual Studio Insiders  
 
 ### .Net Version
 |  .Net Version   | Status  |
 |  ----  | ----  |
 | net40  | ✅ |
 | net45  | ✅ |
+| net451  | ✅ |
+| net452  | ✅ |
 | net46  | ✅ |
+| net461  | ✅ |
+| net462  | ✅ |
 | net47  | ✅ |
+| net471  | ✅ |
+| net472  | ✅ |
 | net48  | ✅ |
+| net481  | ✅ |
 | netcoreapp3.0  | ✅ |
+| netcoreapp3.1  | ✅ |
 | net5.0-windows  | ✅ |
 | net6.0-windows  | ✅ |
 | net7.0-windows  | ✅ |
 | net8.0-windows  | ✅ |
+| net9.0-windows  | ✅ |
+| net10.0-windows  | ✅ |
 
 ### Donate
 If you think our open source software is helpful to you, please scan the QR code below and give us a cup of coffee.
@@ -70,30 +80,17 @@ Install-Package WPFDevelopers
 ``` XML
 xmlns:wd="https://github.com/WPFDevelopersOrg/WPFDevelopers"
 ```
-#### 1.1.0.3-preview1 and above versions
+#### 
 ``` XML
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                      <ResourceDictionary Source="pack://application:,,,/WPFDevelopers;component/Themes/Theme.xaml" />
- 			<!--  需要注意 wd:Resources 必须在Theme.xaml后  -->
- 			<!--  默认情况下，Theme 会跟随系统主题（适用于 Windows 10 及以上版本），自动切换为 Light 或 Dark 模式。
+ 					 <!--  需要注意 wd:Resources 必须在Theme.xaml后  -->
+ 					 <!--  默认情况下，Theme 会跟随系统主题（适用于 Windows 10 及以上版本），自动切换为 Light 或 Dark 模式。
                               若要手动设置为 Light 模式，可以使用 Theme="Light"。
                               你还可以自定义主题色，使用 Color="Fuchsia"（例如设置为 Fuchsia）-->
- 		     <wd:Resources />
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Application.Resources>
-```
-#### 1.1.0.3-preview1 and below versions
-``` XML
-    <Application.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                    <ResourceDictionary Source="pack://application:,,,/WPFDevelopers;component/Themes/Light.Blue.xaml"/>
-                    <!--需要注意 wd:Resources 必须在配色主题后，Theme="Dark" 为黑色皮肤-->
-                    <wd:Resources Theme="Light"/>
-                    <ResourceDictionary Source="pack://application:,,,/WPFDevelopers;component/Themes/Theme.xaml"/>
+ 		     		<wd:Resources />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -102,6 +99,31 @@ xmlns:wd="https://github.com/WPFDevelopersOrg/WPFDevelopers"
 ###  Step 3: Add the namespace;
 
 `xmlns:wd="https://github.com/WPFDevelopersOrg/WPFDevelopers"`
+
+----------
+### SvgViewer
+
+<img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/SvgViewer.jpg"/>   
+
+----------
+### Dial‎
+
+<img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/Dial.jpg"/>   
+
+----------
+### MultiSelectComboBox
+
+<img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/MultiSelectComboBox.jpg"/>   
+
+----------
+### ScreenCaptureExt‎
+
+<img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/ScreenCaptureExt.jpg"/>   
+
+----------
+### PathIcon‎
+
+<img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/PathIcon.jpg"/>   
 
 ----------
 ### AnimatedGrid

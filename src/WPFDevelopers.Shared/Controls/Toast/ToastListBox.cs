@@ -3,16 +3,16 @@ using System.Windows.Controls;
 
 namespace WPFDevelopers.Controls
 {
-    public class MessageListBox : ListBox
+    public class ToastListBox : ListBox
     {
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
-            return item is MessageListBoxItem;
+            return item is ToastListBoxItem;
         }
 
         protected override DependencyObject GetContainerForItemOverride()
         {
-            return new MessageListBoxItem();
+            return new ToastListBoxItem();
         }
 
     }

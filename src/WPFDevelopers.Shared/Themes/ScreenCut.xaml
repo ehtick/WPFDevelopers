@@ -71,12 +71,16 @@
                                 x:Name="PART_EditBar"
                                 Panel.ZIndex="99"
                                 Background="{DynamicResource WD.BackgroundBrush}"
+                                CornerRadius="4"
                                 Effect="{StaticResource WD.PopupShadowDepth}"
                                 Visibility="Hidden">
                                 <WrapPanel Margin="10,5" VerticalAlignment="Center">
                                     <RadioButton
                                         x:Name="PART_RectangleRadioButton"
-                                        Margin="4,0"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
                                         Style="{StaticResource WD.PathRadioButton}"
                                         ToolTip="{Binding [Rectangle], Source={x:Static resx:LanguageManager.Instance}}">
                                         <controls:PathIcon
@@ -87,7 +91,10 @@
                                     </RadioButton>
                                     <RadioButton
                                         x:Name="PART_EllipseRadioButton"
-                                        Margin="4,0"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
                                         Style="{StaticResource WD.PathRadioButton}"
                                         ToolTip="{Binding [Ellipse], Source={x:Static resx:LanguageManager.Instance}}">
                                         <Ellipse
@@ -95,12 +102,15 @@
                                             Height="19"
                                             SnapsToDevicePixels="True"
                                             Stroke="{DynamicResource WD.RegularTextBrush}"
-                                            StrokeThickness="1.5"
+                                            StrokeThickness="1"
                                             UseLayoutRounding="True" />
                                     </RadioButton>
                                     <RadioButton
                                         x:Name="PART_ArrowRadioButton"
-                                        Margin="4,0"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
                                         Style="{StaticResource WD.PathRadioButton}"
                                         ToolTip="{Binding [Arrow], Source={x:Static resx:LanguageManager.Instance}}">
                                         <controls:PathIcon
@@ -111,7 +121,10 @@
                                     </RadioButton>
                                     <RadioButton
                                         x:Name="PART_InkRadioButton"
-                                        Margin="4,0"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
                                         Style="{StaticResource WD.PathRadioButton}"
                                         ToolTip="{Binding [Ink], Source={x:Static resx:LanguageManager.Instance}}">
                                         <controls:PathIcon
@@ -122,7 +135,10 @@
                                     </RadioButton>
                                     <RadioButton
                                         x:Name="PART_MosaicRadioButton"
-                                        Margin="4,0"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
                                         Style="{StaticResource WD.PathRadioButton}"
                                         ToolTip="{Binding [Mosaic], Source={x:Static resx:LanguageManager.Instance}}">
                                         <controls:PathIcon
@@ -133,7 +149,10 @@
                                     </RadioButton>
                                     <RadioButton
                                         x:Name="PART_TextRadioButton"
-                                        Margin="4,0"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
                                         Style="{DynamicResource WD.PathRadioButton}"
                                         ToolTip="{Binding [Text], Source={x:Static resx:LanguageManager.Instance}}">
                                         <controls:PathIcon
@@ -148,9 +167,27 @@
                                         Margin="4,0"
                                         Stroke="{DynamicResource WD.PrimaryTextBrush}" />
                                     <Button
+                                        x:Name="PART_UndoButton"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
+                                        IsEnabled="False"
+                                        Style="{StaticResource WD.PathBarButton}"
+                                        ToolTip="{Binding [Undo], Source={x:Static resx:LanguageManager.Instance}}">
+                                        <controls:PathIcon
+                                            Width="18"
+                                            Height="18"
+                                            Foreground="{DynamicResource WD.RegularTextBrush}"
+                                            Kind="Undo" />
+                                    </Button>
+                                    <Button
                                         x:Name="PART_SaveButton"
-                                        Margin="4,0"
-                                        Style="{StaticResource WD.PathButton}"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
+                                        Style="{StaticResource WD.PathBarButton}"
                                         ToolTip="{Binding [Save], Source={x:Static resx:LanguageManager.Instance}}">
                                         <controls:PathIcon
                                             Width="18"
@@ -160,8 +197,11 @@
                                     </Button>
                                     <Button
                                         x:Name="PART_CancelButton"
-                                        Margin="4,0"
-                                        Style="{StaticResource WD.PathButton}"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
+                                        Style="{StaticResource WD.PathBarButton}"
                                         ToolTip="{Binding [Cancel], Source={x:Static resx:LanguageManager.Instance}}">
                                         <controls:PathIcon
                                             Width="14"
@@ -171,8 +211,11 @@
                                     </Button>
                                     <Button
                                         x:Name="PART_CompleteButton"
-                                        Margin="4,0"
-                                        Style="{StaticResource WD.PathButton}"
+                                        Width="25"
+                                        Height="25"
+                                        Margin="6,0"
+                                        Padding="0"
+                                        Style="{StaticResource WD.PathBarButton}"
                                         ToolTip="{Binding [Complete], Source={x:Static resx:LanguageManager.Instance}}">
                                         <controls:PathIcon
                                             Width="20"
@@ -191,7 +234,7 @@
                                     x:Name="PART_BorderPopup"
                                     Margin="10,30,10,10"
                                     Background="{DynamicResource WD.BackgroundBrush}"
-                                    CornerRadius="{Binding Path=(helpers:ElementHelper.CornerRadius), RelativeSource={RelativeSource TemplatedParent}}"
+                                    CornerRadius="4"
                                     Effect="{StaticResource WD.PopupShadowDepth}">
                                     <controls:SmallPanel>
                                         <Path

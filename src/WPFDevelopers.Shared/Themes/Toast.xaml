@@ -8,9 +8,9 @@
         <ResourceDictionary Source="Basic/ControlBasic.xaml" />
     </ResourceDictionary.MergedDictionaries>
     <Style
-        x:Key="WD.MessageListBoxItem"
+        x:Key="WD.ToastListBoxItem"
         BasedOn="{StaticResource WD.ControlBasicStyle}"
-        TargetType="{x:Type controls:MessageListBoxItem}">
+        TargetType="{x:Type controls:ToastListBoxItem}">
         <Setter Property="Foreground" Value="{DynamicResource WD.RegularTextBrush}" />
         <Setter Property="Background" Value="{DynamicResource WD.BackgroundBrush}" />
         <Setter Property="helpers:ListBoxItemExtensions.AutoRemoveOnOpacityZero" Value="True" />
@@ -20,7 +20,7 @@
         <Setter Property="Margin" Value="4,2" />
         <Setter Property="Template">
             <Setter.Value>
-                <ControlTemplate TargetType="{x:Type controls:MessageListBoxItem}">
+                <ControlTemplate TargetType="{x:Type controls:ToastListBoxItem}">
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="Storyboard_Close" DesiredFrameRate="30">
                             <DoubleAnimation
@@ -97,7 +97,7 @@
                                         x:Name="PART_Path"
                                         Width="15"
                                         Height="15"
-                                        Data="{StaticResource WD.InformationGeometry}"
+                                        Data="{StaticResource WD.SuccessGeometry}"
                                         Fill="{DynamicResource WD.PrimaryBrush}"
                                         Stretch="Fill" />
                                     <TextBlock
@@ -139,23 +139,23 @@
                         </Rectangle>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="MessageType" Value="Warning">
+                        <Trigger Property="ToastType" Value="Warning">
                             <Setter TargetName="PART_Path" Property="Data" Value="{StaticResource WD.WarningGeometry}" />
                             <Setter TargetName="PART_Path" Property="Fill" Value="{StaticResource WD.WarningBrush}" />
                             <Setter Property="Foreground" Value="{StaticResource WD.WarningBrush}" />
                         </Trigger>
-                        <Trigger Property="MessageType" Value="Error">
+                        <Trigger Property="ToastType" Value="Error">
                             <Setter TargetName="PART_Path" Property="Data" Value="{StaticResource WD.ErrorGeometry}" />
                             <Setter TargetName="PART_Path" Property="Fill" Value="{StaticResource WD.DangerBrush}" />
                             <Setter Property="Foreground" Value="{StaticResource WD.DangerBrush}" />
                         </Trigger>
-                        <Trigger Property="MessageType" Value="Information">
-                            <Setter TargetName="PART_Path" Property="Data" Value="{StaticResource WD.InformationGeometry}" />
+                        <Trigger Property="ToastType" Value="Success">
+                            <Setter TargetName="PART_Path" Property="Data" Value="{StaticResource WD.SuccessGeometry}" />
                             <Setter TargetName="PART_Path" Property="Fill" Value="{StaticResource WD.SuccessBrush}" />
                             <Setter Property="Foreground" Value="{StaticResource WD.SuccessBrush}" />
                         </Trigger>
-                        <Trigger Property="MessageType" Value="Question">
-                            <Setter TargetName="PART_Path" Property="Data" Value="{StaticResource WD.QuestionGeometry}" />
+                        <Trigger Property="ToastType" Value="Info">
+                            <Setter TargetName="PART_Path" Property="Data" Value="{StaticResource WD.WarningGeometry}" />
                             <Setter TargetName="PART_Path" Property="Fill" Value="{DynamicResource WD.PrimaryBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource WD.PrimaryBrush}" />
                         </Trigger>
@@ -181,13 +181,13 @@
         </Setter>
     </Style>
 
-    <Style x:Key="WD.MessageListBox" TargetType="{x:Type controls:MessageListBox}">
+    <Style x:Key="WD.ToastListBox" TargetType="{x:Type controls:ToastListBox}">
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
     </Style>
 
-    <Style BasedOn="{StaticResource WD.MessageListBoxItem}" TargetType="{x:Type controls:MessageListBoxItem}" />
-    <Style BasedOn="{StaticResource WD.MessageListBox}" TargetType="{x:Type controls:MessageListBox}" />
+    <Style BasedOn="{StaticResource WD.ToastListBoxItem}" TargetType="{x:Type controls:ToastListBoxItem}" />
+    <Style BasedOn="{StaticResource WD.ToastListBox}" TargetType="{x:Type controls:ToastListBox}" />
 
 </ResourceDictionary>

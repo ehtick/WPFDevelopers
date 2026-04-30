@@ -103,14 +103,15 @@ namespace WPFDevelopers.Controls
             _TrayWndProc = WndProc_CallBack;
             _TrayWndMessage = "TrayWndMessageName";
             _TrayMouseMessage = (int)WM.USER + 1024;
-            Start();
             if (Application.Current != null)
             {
+                Application.Current.Exit += OnCurrent_Exit;
                 WPFDevelopers.Resources.ThemeChanged += Resources_ThemeChanged;
-                Application.Current.Exit += (s, e) => Dispose();
             }
+            Start();
             NotifyIconCache = this;
         }
+
         static NotifyIcon()
         {
             DataContextProperty.OverrideMetadata(typeof(NotifyIcon), new FrameworkPropertyMetadata(DataContextPropertyChanged));
@@ -274,7 +275,8 @@ namespace WPFDevelopers.Controls
             _iconHandle = _iconHandle != IntPtr.Zero ? IntPtr.Zero : _tempIconHandle;
             ChangeIcon(false, _iconHandle);
         }
-        private static void Current_Exit(object sender, ExitEventArgs e)
+
+        private void OnCurrent_Exit(object sender, ExitEventArgs e)
         {
             s_NotifyIcon?.Dispose();
             s_NotifyIcon = default;
@@ -293,20 +295,54 @@ namespace WPFDevelopers.Controls
 
         public bool Stop()
         {
-            //销毁窗体
-            if (_TrayWindowHandle != IntPtr.Zero)
-                if (User32Interop.IsWindow(_TrayWindowHandle))
-                    User32Interop.DestroyWindow(_TrayWindowHandle);
+            if (_dispatcherTimerTwink != null)
+            {
+                _dispatcherTimerTwink.Stop();
+                _dispatcherTimerTwink = null;
+            }
 
-            //反注册窗口类
-            if (!string.IsNullOrWhiteSpace(_TrayWndClassName))
-                User32Interop.UnregisterClassName(_TrayWndClassName, Kernel32Interop.GetModuleHandle(default));
+            if (Thread.VolatileRead(ref _IsShowIn) == 1)
+            {
+                Hide();
+            }
 
-            //销毁Icon
             if (_hIcon != IntPtr.Zero)
+            {
                 User32Interop.DestroyIcon(_hIcon);
+                _hIcon = IntPtr.Zero;
+            }
 
-            Hide();
+            if (_tempIconHandle != IntPtr.Zero)
+            {
+                User32Interop.DestroyIcon(_tempIconHandle);
+                _tempIconHandle = IntPtr.Zero;
+            }
+
+            if (_iconHandle != IntPtr.Zero)
+            {
+                User32Interop.DestroyIcon(_iconHandle);
+                _iconHandle = IntPtr.Zero;
+            }
+
+            if (_TrayWindowHandle != IntPtr.Zero)
+            {
+                if (User32Interop.IsWindow(_TrayWindowHandle))
+                {
+                    User32Interop.DestroyWindow(_TrayWindowHandle);
+                }
+                _TrayWindowHandle = IntPtr.Zero;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_TrayWndClassName))
+            {
+                User32Interop.UnregisterClassName(_TrayWndClassName,
+                    Kernel32Interop.GetModuleHandle(default));
+            }
+
+            Thread.VolatileWrite(ref _IsShowIn, 0);
+
+            _contextContent = null;
+            _icon = null;
 
             return true;
         }
@@ -440,8 +476,9 @@ namespace WPFDevelopers.Controls
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
+                throw;
             }
 
             return bytearray;
@@ -546,66 +583,6 @@ namespace WPFDevelopers.Controls
                 return Shell32Interop.Shell_NotifyIcon(NotifyCommand.NIM_Modify, ref _NOTIFYICONDATA);
             }
         }
-        //private bool ChangeIcon()
-        //{
-        //    if (DesignerHelper.IsInDesignMode == true) return false;
-        //    var bitmapFrame = _icon as BitmapFrame;
-        //    if (bitmapFrame != null && bitmapFrame.Decoder != null)
-        //        if (bitmapFrame.Decoder is IconBitmapDecoder)
-        //        {
-        //            //var iconBitmapDecoder = new Rect(0, 0, _icon.Width, _icon.Height);
-        //            //var dv = new DrawingVisual();
-        //            //var dc = dv.RenderOpen();
-        //            //dc.DrawImage(_icon, iconBitmapDecoder);
-        //            //dc.Close();
-
-        //            //var bmp = new RenderTargetBitmap((int)_icon.Width, (int)_icon.Height, 96, 96,
-        //            //    PixelFormats.Pbgra32);
-        //            //bmp.Render(dv);
-
-
-        //            //BitmapSource bitmapSource = bmp;
-
-        //            //if (bitmapSource.Format != PixelFormats.Bgra32 && bitmapSource.Format != PixelFormats.Pbgra32)
-        //            //    bitmapSource = new FormatConvertedBitmap(bitmapSource, PixelFormats.Bgra32, null, 0.0);
-        //            var w = bitmapFrame.PixelWidth;
-        //            var h = bitmapFrame.PixelHeight;
-        //            var bpp = bitmapFrame.Format.BitsPerPixel;
-        //            var stride = (bpp * w + 31) / 32 * 4;
-        //            var sizeCopyPixels = stride * h;
-        //            var xor = new byte[sizeCopyPixels];
-        //            bitmapFrame.CopyPixels(xor, stride, 0);
-
-        //            var iconHandle = CreateIconCursor(xor, w, h, 0, 0, true);
-        //            _iconHandle = iconHandle.CriticalGetHandle();
-        //        }
-
-
-        //    if (Thread.VolatileRead(ref _IsShowIn) != 1)
-        //        return false;
-
-        //    if (_hIcon != IntPtr.Zero)
-        //    {
-        //        User32Interop.DestroyIcon(_hIcon);
-        //        _hIcon = IntPtr.Zero;
-        //    }
-
-        //    lock (this)
-        //    {
-        //        if (_iconHandle != IntPtr.Zero)
-        //        {
-        //            var hIcon = _iconHandle;
-        //            _NOTIFYICONDATA.hIcon = hIcon;
-        //            _hIcon = hIcon;
-        //        }
-        //        else
-        //        {
-        //            _NOTIFYICONDATA.hIcon = IntPtr.Zero;
-        //        }
-
-        //        return Shell32Interop.Shell_NotifyIcon(NotifyCommand.NIM_Modify, ref _NOTIFYICONDATA);
-        //    }
-        //}
 
         private bool ChangeTitle(string title)
         {
@@ -661,10 +638,15 @@ namespace WPFDevelopers.Controls
 
             Thread.VolatileWrite(ref _IsShowIn, 0);
 
+            bool result;
             lock (this)
             {
-                return Shell32Interop.Shell_NotifyIcon(NotifyCommand.NIM_Delete, ref _NOTIFYICONDATA);
+                result = Shell32Interop.Shell_NotifyIcon(NotifyCommand.NIM_Delete, ref _NOTIFYICONDATA);
             }
+
+            _NOTIFYICONDATA = default;
+
+            return result;
         }
 
         private IntPtr WndProc_CallBack(IntPtr hwnd, WM msg, IntPtr wParam, IntPtr lParam)
@@ -778,10 +760,58 @@ namespace WPFDevelopers.Controls
             if (!disposedValue)
             {
                 if (disposing)
+                {
+                    if (_dispatcherTimerTwink != null)
+                    {
+                        _dispatcherTimerTwink.Stop();
+                        _dispatcherTimerTwink.Tick -= DispatcherTimerTwinkTick;
+                        _dispatcherTimerTwink = null;
+                    }
+
+                    if (Application.Current != null)
+                    {
+                        WPFDevelopers.Resources.ThemeChanged -= Resources_ThemeChanged;
+                    }
+
+                    if (_contextContent != null)
+                    {
+                        _contextContent.IsOpen = false;
+                        _contextContent.Child = null;
+                        _contextContent = null;
+                    }
+
                     Stop();
+                }
+
+                if (_hIcon != IntPtr.Zero)
+                {
+                    User32Interop.DestroyIcon(_hIcon);
+                    _hIcon = IntPtr.Zero;
+                }
+
+                if (_tempIconHandle != IntPtr.Zero)
+                {
+                    User32Interop.DestroyIcon(_tempIconHandle);
+                    _tempIconHandle = IntPtr.Zero;
+                }
+
+                if (_iconHandle != IntPtr.Zero)
+                {
+                    User32Interop.DestroyIcon(_iconHandle);
+                    _iconHandle = IntPtr.Zero;
+                }
+
+                if (ReferenceEquals(this, NotifyIconCache))
+                {
+                    NotifyIconCache = null;
+                }
 
                 disposedValue = true;
             }
+        }
+        ~NotifyIcon()
+        {
+            Dispose(false);
         }
     }
 

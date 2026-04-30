@@ -358,7 +358,6 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="PART_RectangleSelected" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="PART_ContentPresenter" Property="TextElement.Foreground" Value="{DynamicResource WD.PrimaryBrush}" />
-                            <Setter TargetName="PART_ContentPresenter" Property="TextElement.FontWeight" Value="Bold" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -367,7 +366,6 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="PART_ContentPresenter" Property="TextElement.Foreground" Value="{DynamicResource WD.PrimaryBrush}" />
                             <Setter TargetName="PART_RectangleSelected" Property="Visibility" Value="Visible" />
-                            <Setter TargetName="PART_ContentPresenter" Property="TextElement.FontWeight" Value="Bold" />
                         </MultiTrigger>
                         <Trigger Property="IsFocused" Value="True">
                             <Setter TargetName="PART_RectangleMouseOver" Property="Opacity" Value=".2" />

@@ -6,6 +6,7 @@ using System.Windows.Shell;
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -57,6 +58,16 @@ namespace WPFDevelopers.Controls
 
         public static readonly DependencyProperty ButtonRadiusProperty =
             DependencyProperty.Register("ButtonCornerRadius", typeof(CornerRadius), typeof(WDMessageBox), new PropertyMetadata(null));
+
+
+        public bool IsDefault
+        {
+            get { return (bool)GetValue(IsDefaultProperty); }
+            set { SetValue(IsDefaultProperty, value); }
+        }
+
+        public static readonly DependencyProperty IsDefaultProperty =
+            DependencyProperty.Register("IsDefault", typeof(bool), typeof(WDMessageBox), new PropertyMetadata(true));
 
 
         static WDMessageBox()
@@ -213,6 +224,16 @@ namespace WPFDevelopers.Controls
             Close();
         }
 
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Key == Key.Escape)
+            {
+                Close();
+                e.Handled = true;
+            }
+        }
+
         private void DisplayButtons(MessageBoxButton button)
         {
             switch (button)
@@ -261,7 +282,7 @@ namespace WPFDevelopers.Controls
                     _solidColorBrush = ThemeManager.Instance.Resources.TryFindResource<SolidColorBrush>("WD.SuccessBrush");
                     break;
                 case MessageBoxImage.Question:
-                    _geometry = ThemeManager.Instance.Resources.TryFindResource<Geometry>("WD.QuestionGeometry");
+                    _geometry = ThemeManager.Instance.Resources.TryFindResource<Geometry>("WD.InfoGeometry");
                     _solidColorBrush = ThemeManager.Instance.Resources.TryFindResource<SolidColorBrush>("WD.PrimaryBrush");
                     break;
             }

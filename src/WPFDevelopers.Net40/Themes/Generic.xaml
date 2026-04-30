@@ -34,7 +34,6 @@
                             </Grid.RowDefinitions>
                             <Border
                                 Grid.Row="0"
-                                Margin="0,0,-1,0"
                                 HorizontalAlignment="Stretch"
                                 Background="{TemplateBinding TitleBackground}" />
                             <control:SmallPanel x:Name="PART_Normal" Grid.Row="0">

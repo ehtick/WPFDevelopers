@@ -54,7 +54,7 @@ namespace WPFDevelopers.Samples.ExampleViews
         private void ScreenCapturer_SnapCanceled()
         {
             App.CurrentMainWindow.WindowState = WindowState.Normal;
-            Message.Push($"{DateTime.Now} 取消截图", MessageBoxImage.Information);
+            Toast.Push($"{DateTime.Now} 取消截图", ToastImage.Info);
         }
 
         private void ScreenCapturer_SnapCompleted(System.Windows.Media.Imaging.CroppedBitmap bitmap)
@@ -77,7 +77,7 @@ namespace WPFDevelopers.Samples.ExampleViews
 
         private void ScreenCaptureExt_SnapSaveFullPath(string text)
         {
-            Message.Push($"截图路径：{text}", MessageBoxImage.Information);
+            Toast.Push($"截图路径：{text}", ToastImage.Info);
         }
 
         private void ScreenCaptureExt_SnapCompleted(System.Windows.Media.Imaging.BitmapSource bitmap)
@@ -92,7 +92,7 @@ namespace WPFDevelopers.Samples.ExampleViews
             {
                 if (App.CurrentMainWindow.WindowState == WindowState.Minimized)
                     App.CurrentMainWindow.WindowState = WindowState.Normal;
-                Message.Push($"{DateTime.Now} 取消截图", MessageBoxImage.Information);
+                Toast.Push($"{DateTime.Now} 取消截图", ToastImage.Info);
             }
             catch (Exception ex)
             {

@@ -7,11 +7,11 @@ using WPFDevelopers.Controls;
 namespace WPFDevelopers.Samples.ExampleViews
 {
     /// <summary>
-    /// MessageExample.xaml 的交互逻辑
+    /// ToastExample.xaml 的交互逻辑
     /// </summary>
-    public partial class MessageExample : UserControl
+    public partial class ToastExample : UserControl
     {
-        public MessageExample()
+        public ToastExample()
         {
             InitializeComponent();
            
@@ -23,7 +23,7 @@ namespace WPFDevelopers.Samples.ExampleViews
             if (radioButton != null)
             {
                 if (Enum.TryParse(radioButton.Content.ToString(), out Position position))
-                    Message.SetPosition(position);
+                    Toast.SetPosition(position);
             }
         }
         private void AddButton_Click(object sender, RoutedEventArgs e)
@@ -32,34 +32,34 @@ namespace WPFDevelopers.Samples.ExampleViews
             switch (btn.Tag)
             {
                 case "Info":
-                    Message.Push(App.Current.MainWindow, "This is a info message", MessageBoxImage.Information);
+                    Toast.Push(App.Current.MainWindow, "This is a info toast", ToastImage.Info);
                     break;
                 case "Error":
-                    Message.Push("This is a error message", MessageBoxImage.Error, true);
+                    Toast.Push("This is a error toast", ToastImage.Error, true);
                     break;
                 case "Warning":
-                    Message.Push("This is a warning message", MessageBoxImage.Warning, true);
+                    Toast.Push("This is a warning toast", ToastImage.Warning, true);
                     break;
-                case "Question":
-                    Message.Push("This is a question message", MessageBoxImage.Question);
+                case "Success":
+                    Toast.Push("This is a question toast", ToastImage.Success);
                     break;
                 case "IntPtr":
                     Window parentWindow = Window.GetWindow(this);
                     IntPtr windowHandle = new WindowInteropHelper(parentWindow).Handle;
-                    Message.Push(windowHandle, "This is a Handle message", MessageBoxImage.Question);
+                    Toast.Push(windowHandle, "This is a Handle toast", ToastImage.Success);
                     break;
                 default:
-                    Message.Push("这是一条很长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长消息", MessageBoxImage.Information);
+                    Toast.Push("这是一条很长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长消息", ToastImage.Info);
                     break;
             }
         }
         private void BtnClear_Click(object sender, RoutedEventArgs e)
         {
-            Message.Clear();
+            Toast.Clear();
         }
         private void BtnDesktopClear_Click(object sender, RoutedEventArgs e)
         {
-            Message.ClearDesktop();
+            Toast.ClearDesktop();
         }
         
 
@@ -69,19 +69,19 @@ namespace WPFDevelopers.Samples.ExampleViews
             switch (btn.Tag)
             {
                 case "Info":
-                    Message.PushDesktop("This is a info message", MessageBoxImage.Information);
+                    Toast.PushDesktop("This is a info toast", ToastImage.Info);
                     break;
                 case "Error":
-                    Message.PushDesktop("This is a error message", MessageBoxImage.Error, true);
+                    Toast.PushDesktop("This is a error toast", ToastImage.Error, true);
                     break;
                 case "Warning":
-                    Message.PushDesktop("This is a warning message", MessageBoxImage.Warning, true);
+                    Toast.PushDesktop("This is a warning toast", ToastImage.Warning, true);
                     break;
-                case "Question":
-                    Message.PushDesktop("This is a question message", MessageBoxImage.Question);
+                case "Success":
+                    Toast.PushDesktop("This is a Success toast", ToastImage.Success);
                     break;
                 default:
-                    Message.PushDesktop("这是一条很长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长消息", MessageBoxImage.Information);
+                    Toast.PushDesktop("这是一条很长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长长消息", ToastImage.Info);
                     break;
             }
         }

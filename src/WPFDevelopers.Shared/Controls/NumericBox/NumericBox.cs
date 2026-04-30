@@ -38,7 +38,6 @@ namespace WPFDevelopers.Controls
 
         private bool _isManual;
         private bool _isBusy;
-
         static NumericBox()
         {
             InitializeCommands();
@@ -69,8 +68,6 @@ namespace WPFDevelopers.Controls
 
         private static void OnIncreaseCommand(object sender, RoutedEventArgs e)
         {
-            //var numericBox = sender as NumericBox;
-            //numericBox.ContinueChangeValue(true);
             var numericBox = sender as NumericBox;
             if (!numericBox.IsReadOnly && numericBox.IsEnabled)
             {
@@ -87,13 +84,12 @@ namespace WPFDevelopers.Controls
         private static void OnCanIncreaseCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             var numericBox = sender as NumericBox;
-            e.CanExecute = (!numericBox.IsReadOnly && numericBox.IsEnabled && DoubleUtil.LessThan(numericBox.Value, numericBox.Maximum));
+            if (!numericBox.Value.HasValue) return;
+            e.CanExecute = (!numericBox.IsReadOnly && numericBox.IsEnabled && DoubleUtil.LessThan(numericBox.Value.Value, numericBox.Maximum));
         }
 
         private static void OnDecreaseCommand(object sender, RoutedEventArgs e)
         {
-            //var numericBox = sender as NumericBox;
-            //numericBox.ContinueChangeValue(false);
             var numericBox = sender as NumericBox;
             if (!numericBox.IsReadOnly && numericBox.IsEnabled)
             {
@@ -109,7 +105,8 @@ namespace WPFDevelopers.Controls
         private static void OnCanDecreaseCommand(object sender, CanExecuteRoutedEventArgs e)
         {
             var numericBox = sender as NumericBox;
-            e.CanExecute = (!numericBox.IsReadOnly && numericBox.IsEnabled && DoubleUtil.GreaterThan(numericBox.Value, numericBox.Minimum));
+            if (!numericBox.Value.HasValue) return;
+            e.CanExecute = (!numericBox.IsReadOnly && numericBox.IsEnabled && DoubleUtil.GreaterThan(numericBox.Value.Value, numericBox.Minimum));
         }
 
         #endregion
@@ -212,6 +209,7 @@ namespace WPFDevelopers.Controls
         }
 
         public static readonly DependencyProperty TextAlignmentProperty = TextBox.TextAlignmentProperty.AddOwner(_typeofSelf);
+
         [Category("Common")]
         public TextAlignment TextAlignment
         {
@@ -221,6 +219,7 @@ namespace WPFDevelopers.Controls
 
         public static readonly DependencyProperty IsReadOnlyProperty = TextBoxBase.IsReadOnlyProperty.AddOwner(_typeofSelf,
             new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Inherits, IsReadOnlyPropertyChangedCallback));
+
         [Category("Appearance")]
         public bool IsReadOnly
         {
@@ -238,6 +237,7 @@ namespace WPFDevelopers.Controls
 
         public static readonly DependencyProperty PrecisionProperty = DependencyProperty.Register("Precision", typeof(int?), _typeofSelf,
             new PropertyMetadata(null, OnPrecisionChanged, CoercePrecision));
+
         [Category("Common")]
         public int? Precision
         {
@@ -255,10 +255,10 @@ namespace WPFDevelopers.Controls
         {
             var numericBox = (NumericBox)d;
             var newPrecision = (int?)e.NewValue;
+            if (!numericBox.Value.HasValue) return;
+            var roundValue = numericBox.CorrectPrecision(newPrecision, numericBox.Value.Value);
 
-            var roundValue = numericBox.CorrectPrecision(newPrecision, numericBox.Value);
-
-            if (DoubleUtil.AreClose(numericBox.Value, roundValue))
+            if (DoubleUtil.AreClose(numericBox.Value.Value, roundValue))
                 numericBox.InternalSetText(roundValue);
             else
                 numericBox.Value = roundValue;
@@ -266,6 +266,7 @@ namespace WPFDevelopers.Controls
 
         public static readonly DependencyProperty MinimumProperty = DependencyProperty.Register("Minimum", typeof(double), _typeofSelf,
             new PropertyMetadata(double.MinValue, OnMinimumChanged));
+
         [Category("Common")]
         public double Minimum
         {
@@ -283,6 +284,7 @@ namespace WPFDevelopers.Controls
 
         public static readonly DependencyProperty MaximumProperty = DependencyProperty.Register("Maximum", typeof(double), _typeofSelf,
             new PropertyMetadata(double.MaxValue, OnMaximumChanged, CoerceMaximum));
+
         [Category("Common")]
         public double Maximum
         {
@@ -303,19 +305,23 @@ namespace WPFDevelopers.Controls
             numericBox.CoerceValue(ValueProperty, numericBox.Value);
         }
 
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double), _typeofSelf,
-            new FrameworkPropertyMetadata(0d, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged, CoerceValue));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(double?), _typeofSelf,
+            new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged, CoerceValue));
+
         [Category("Common")]
-        public double Value
+        public double? Value
         {
-            get { return (double)GetValue(ValueProperty); }
+            get { return (double?)GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
         }
 
         private static object CoerceValue(DependencyObject d, object value)
         {
             var numericBox = (NumericBox)d;
+            if (value == null) return null;
             var val = (double)value;
+            if (double.IsNaN(val))
+                return val;
 
             if (DoubleUtil.LessThan(val, numericBox.Minimum))
                 return numericBox.Minimum;
@@ -329,7 +335,11 @@ namespace WPFDevelopers.Controls
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var numericBox = (NumericBox)d;
-            numericBox.OnValueChanged((double)e.OldValue, (double)e.NewValue);
+            var oldValue = (double?)e.OldValue;
+            var newValue = (double?)e.NewValue;
+            if (!newValue.HasValue) return;
+            var oldValueToUse = oldValue.HasValue ? oldValue.Value : 0;
+            numericBox.OnValueChanged(oldValueToUse, newValue.Value);
         }
 
         public bool IsAutoCapture
@@ -348,6 +358,8 @@ namespace WPFDevelopers.Controls
 
         protected virtual void OnValueChanged(double oldValue, double newValue)
         {
+            if (double.IsNaN(newValue))
+                return;
             InternalSetText(newValue);
             InvalidateRequerySuggested(newValue);
 
@@ -366,7 +378,6 @@ namespace WPFDevelopers.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             UnsubscribeEvents();
 
             _valueTextBox = GetTemplateChild(TextBoxTemplateName) as TextBox;
@@ -377,12 +388,16 @@ namespace WPFDevelopers.Controls
             {
                 throw new NullReferenceException(string.Format("You have missed to specify {0}, {1} or {2} in your template", NumericUpTemplateName, NumericDownTemplateName, TextBoxTemplateName));
             }
-
             _repeatUp.PreviewMouseUp += OnRepeatButtonPreviewMouseUp;
             _repeatDown.PreviewMouseUp += OnRepeatButtonPreviewMouseUp;
-
             ToggleReadOnlyMode(IsReadOnly);
-            OnValueChanged(Value, Value);
+            if (Value.HasValue)
+            {
+                if (!double.IsNaN(Value.Value))
+                {
+                    InternalSetText(Value.Value);
+                }
+            }
         }
 
         protected override void OnGotFocus(RoutedEventArgs e)
@@ -399,8 +414,6 @@ namespace WPFDevelopers.Controls
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
             base.OnPreviewMouseWheel(e);
-            //if (e.Delta != 0 && (IsFocused || _valueTextBox.IsFocused))
-            //    ContinueChangeValue(e.Delta >= 0, false);
             if (e.Delta != 0 && (IsFocused || _valueTextBox.IsFocused))
             {
                 bool isIncrease = e.Delta >= 0;
@@ -446,7 +459,6 @@ namespace WPFDevelopers.Controls
                     {
                         ContinueChangeValue(true, isSkipStep: eventArgs.SkipStepChange);
                     }
-                    //ContinueChangeValue(true);
                     e.Handled = true;
                     break;
 
@@ -457,7 +469,6 @@ namespace WPFDevelopers.Controls
                     {
                         ContinueChangeValue(false, isSkipStep: eventArgsDecrease.SkipStepChange);
                     }
-                    //ContinueChangeValue(false);
                     e.Handled = true;
                     break;
             }
@@ -552,9 +563,9 @@ namespace WPFDevelopers.Controls
             double convertedValue;
             if (double.TryParse(inputText, out convertedValue))
             {
-                if (DoubleUtil.AreClose(Value, convertedValue))
+                if (DoubleUtil.AreClose(Value.Value, convertedValue))
                 {
-                    InternalSetText(Value);
+                    InternalSetText(Value.Value);
                     return;
                 }
 
@@ -562,15 +573,15 @@ namespace WPFDevelopers.Controls
 
                 if (convertedValue > Maximum)
                 {
-                    if (DoubleUtil.AreClose(Value, Maximum))
-                        OnValueChanged(Value, Value);
+                    if (DoubleUtil.AreClose(Value.Value, Maximum))
+                        OnValueChanged(Value.Value, Value.Value);
                     else
                         Value = Maximum;
                 }
                 else if (convertedValue < Minimum)
                 {
-                    if (DoubleUtil.AreClose(Value, Minimum))
-                        OnValueChanged(Value, Value);
+                    if (DoubleUtil.AreClose(Value.Value, Minimum))
+                        OnValueChanged(Value.Value, Value.Value);
                     else
                         Value = Minimum;
                 }
@@ -578,7 +589,7 @@ namespace WPFDevelopers.Controls
                     Value = convertedValue;
             }
             else
-                InternalSetText(Value);
+                InternalSetText(Value.Value);
         }
 
         private void MoveFocus()
@@ -640,7 +651,7 @@ namespace WPFDevelopers.Controls
             if (IsReadOnly || !IsEnabled)
                 return;
 
-            if (isIncrease && DoubleUtil.LessThan(Value, Maximum))
+            if (isIncrease && DoubleUtil.LessThan(Value.Value, Maximum))
             {
                 if (!_isBusy && isContinue)
                 {
@@ -650,14 +661,13 @@ namespace WPFDevelopers.Controls
                         _lastOldValue = Value;
                 }
                 _isManual = true;
-                //Value = (double)CoerceValue(this, Value + CalculateInterval(isContinue));
                 if (!isSkipStep)
                     Value = (double)CoerceValue(this, Value + CalculateInterval(isContinue));
                 else
                     Value = (double)CoerceValue(this, Value);
             }
 
-            if (!isIncrease && DoubleUtil.GreaterThan(Value, Minimum))
+            if (!isIncrease && DoubleUtil.GreaterThan(Value.Value, Minimum))
             {
                 if (!_isBusy && isContinue)
                 {
@@ -667,7 +677,6 @@ namespace WPFDevelopers.Controls
                         _lastOldValue = Value;
                 }
                 _isManual = true;
-                //Value = (double)CoerceValue(this, Value - CalculateInterval(isContinue));
                 if (!isSkipStep)
                     Value = (double)CoerceValue(this, Value - CalculateInterval(isContinue));
                 else
@@ -696,7 +705,7 @@ namespace WPFDevelopers.Controls
             if (_lastOldValue.HasValue)
             {
                 _isManual = true;
-                OnValueChanged(_lastOldValue.Value, Value);
+                OnValueChanged(_lastOldValue.Value, Value.Value);
                 _lastOldValue = null;
             }
         }

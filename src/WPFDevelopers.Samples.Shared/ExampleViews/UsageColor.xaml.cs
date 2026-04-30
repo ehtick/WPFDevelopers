@@ -44,7 +44,7 @@ namespace WPFDevelopers.Samples.ExampleViews
         {
             var btn = sender as Button;
             var key = btn.Tag.ToString();
-            Message.Push($"{key} 已复制粘贴板");
+            Toast.Push($"{key} 已复制粘贴板");
             Clipboard.SetText($"{{DynamicResource {key}}}");
         }
 
@@ -52,7 +52,7 @@ namespace WPFDevelopers.Samples.ExampleViews
         {
             var btn = sender as Button;
             var key = btn.Tag.ToString();
-            Message.Push($"{key} 已复制粘贴板");
+            Toast.Push($"{key} 已复制粘贴板");
             Clipboard.SetText($"{{DynamicResource {key}}}");
         }
 

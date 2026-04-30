@@ -111,20 +111,23 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RadioButton}">
-                    <Border Background="Transparent">
+                    <Grid Background="Transparent">
+                        <Border
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="4"
+                            Opacity=".1" />
                         <ContentPresenter
                             x:Name="PART_ContentPresenter"
                             Margin="{TemplateBinding Padding}"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                            Opacity=".8" />
-                    </Border>
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="PART_ContentPresenter" Property="Opacity" Value="1" />
+                            <Setter Property="Background" Value="{DynamicResource WD.RegularTextBrush}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="PART_ContentPresenter" Property="Opacity" Value="1" />
+                            <Setter Property="Background" Value="{DynamicResource WD.RegularTextBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -6,7 +6,7 @@
 		<PackageId>WPFDevelopers</PackageId>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<Copyright>Copyright © WPFDevelopersOrg 2025</Copyright>
+		<Copyright>Copyright © WPFDevelopersOrg 2026</Copyright>
 		<AssemblyVersion>0.0.0.3</AssemblyVersion>
 		<FileVersion>0.0.0.3</FileVersion>
 		<Version>0.0.0.3</Version>

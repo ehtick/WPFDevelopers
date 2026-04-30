@@ -30,22 +30,15 @@ namespace WPFDevelopers.Controls
 
         public static readonly DependencyProperty SelectedTimeProperty =
             DependencyProperty.Register("SelectedTime", typeof(DateTime?), typeof(TimePicker),
-                new FrameworkPropertyMetadata(null, 
-                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal,
-                    OnSelectedTimeChanged));
+                new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, OnSelectedTimeChanged));
 
         public static readonly DependencyProperty IsCurrentTimeProperty =
             DependencyProperty.Register("IsCurrentTime", typeof(bool), typeof(TimePicker), new PropertyMetadata(false));
 
 
         public static readonly RoutedEvent SelectedTimeChangedEvent =
-        EventManager.RegisterRoutedEvent(
-            "SelectedTimeChanged",
-            RoutingStrategy.Bubble,
-            typeof(RoutedPropertyChangedEventHandler<DateTime?>),
-            typeof(TimePicker));
-
-        
+            EventManager.RegisterRoutedEvent("SelectedTimeChanged",
+                RoutingStrategy.Bubble, typeof(RoutedPropertyChangedEventHandler<DateTime?>), typeof(TimePicker));
 
         private HwndSource _hwndSource;
         private Window _window;
@@ -68,19 +61,19 @@ namespace WPFDevelopers.Controls
 
         public string SelectedTimeFormat
         {
-            get => (string) GetValue(SelectedTimeFormatProperty);
+            get => (string)GetValue(SelectedTimeFormatProperty);
             set => SetValue(SelectedTimeFormatProperty, value);
         }
 
         public DateTime? SelectedTime
         {
-            get => (DateTime?) GetValue(SelectedTimeProperty);
+            get => (DateTime?)GetValue(SelectedTimeProperty);
             set => SetValue(SelectedTimeProperty, value);
         }
 
         public bool IsCurrentTime
         {
-            get => (bool) GetValue(IsCurrentTimeProperty);
+            get => (bool)GetValue(IsCurrentTimeProperty);
             set => SetValue(IsCurrentTimeProperty, value);
         }
 
@@ -94,13 +87,13 @@ namespace WPFDevelopers.Controls
         {
             var ctrl = d as TimePicker;
             if (ctrl != null)
-                ctrl.OnMaxDropDownHeightChanged((double) e.OldValue, (double) e.NewValue);
+                ctrl.OnMaxDropDownHeightChanged((double)e.OldValue, (double)e.NewValue);
         }
 
         protected virtual void OnMaxDropDownHeightChanged(double oldValue, double newValue)
         {
         }
-        
+
         private static void OnSelectedTimeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var ctrl = d as TimePicker;
@@ -113,7 +106,7 @@ namespace WPFDevelopers.Controls
                     ctrl._timeSelector.SelectedTime = dateTime;
                 else
                 {
-                    if(ctrl._timeSelector != null)
+                    if (ctrl._timeSelector != null)
                         ctrl._timeSelector.SelectedTime = null;
                     else
                         ctrl._date = dateTime.Value;
@@ -124,8 +117,7 @@ namespace WPFDevelopers.Controls
 
         protected virtual void RaiseSelectedTimeChangedEvent(DateTime? oldValue, DateTime? newValue)
         {
-            RoutedPropertyChangedEventArgs<DateTime?> args =
-                new RoutedPropertyChangedEventArgs<DateTime?>(oldValue, newValue);
+            var args = new RoutedPropertyChangedEventArgs<DateTime?>(oldValue, newValue);
             args.RoutedEvent = SelectedTimeChangedEvent;
             RaiseEvent(args);
         }
@@ -150,8 +142,8 @@ namespace WPFDevelopers.Controls
             _timeSelector = GetTemplateChild(TimeSelectorTemplateName) as TimeSelector;
             if (_timeSelector != null)
             {
-                _timeSelector.SelectedTimeChanged -= TimeSelector_SelectedTimeChanged;
-                _timeSelector.SelectedTimeChanged += TimeSelector_SelectedTimeChanged;
+                _timeSelector.SelectedTimeChanged -= OnTimeSelector_SelectedTimeChanged;
+                _timeSelector.SelectedTimeChanged += OnTimeSelector_SelectedTimeChanged;
                 if (!SelectedTime.HasValue && IsCurrentTime)
                 {
                     SelectedTime = DateTime.Now;
@@ -205,21 +197,21 @@ namespace WPFDevelopers.Controls
         {
             if (_textBox != null)
             {
-                _timeSelector.SelectedTimeChanged -= TimeSelector_SelectedTimeChanged;
+                _timeSelector.SelectedTimeChanged -= OnTimeSelector_SelectedTimeChanged;
                 if (DateTime.TryParse(_textBox.Text, out var dateTime))
                 {
                     if (SelectedTime.HasValue
-                        && 
+                        &&
                         dateTime.ToString(SelectedTimeFormat) == SelectedTime.Value.ToString(SelectedTimeFormat))
                     {
-                        _timeSelector.SelectedTimeChanged += TimeSelector_SelectedTimeChanged;
+                        _timeSelector.SelectedTimeChanged += OnTimeSelector_SelectedTimeChanged;
                         return;
-                    } 
+                    }
                     SelectedTime = dateTime;
                 }
                 else
                     SelectedTime = null;
-                _timeSelector.SelectedTimeChanged += TimeSelector_SelectedTimeChanged;
+                _timeSelector.SelectedTimeChanged += OnTimeSelector_SelectedTimeChanged;
             }
         }
 
@@ -235,7 +227,7 @@ namespace WPFDevelopers.Controls
                 IsDropDownOpen = false;
         }
 
-        private void TimeSelector_SelectedTimeChanged(object sender, RoutedPropertyChangedEventArgs<DateTime?> e)
+        private void OnTimeSelector_SelectedTimeChanged(object sender, RoutedPropertyChangedEventArgs<DateTime?> e)
         {
             if (_textBox != null && e.NewValue != null)
             {

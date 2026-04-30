@@ -66,7 +66,7 @@ namespace WPFDevelopers.Samples.ExampleViews
         {
             if (MyCropImage.CurrentAreaBitmap == null)
             {
-                Message.Push("请选择图片",MessageBoxImage.Warning);
+                Toast.Push("请选择图片", ToastImage.Warning);
                 return;
             }
             var dlg = new SaveFileDialog();

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using WPFDevelopers.Core;
+using WPFDevelopers.Core.Helpers;
 
 namespace WPFDevelopers
 {
@@ -67,7 +68,7 @@ namespace WPFDevelopers
         {
             if(!isInit)
             {
-                if (themeType == ThemeType.Default && IsWindows10OrLater())
+                if (themeType == ThemeType.Default && OSVersionHelper.IsWindows10OrLater())
                 {
                     SystemEvents.UserPreferenceChanged -= OnUserPreferenceChanged;
                     SystemEvents.UserPreferenceChanged += OnUserPreferenceChanged;
@@ -115,20 +116,6 @@ namespace WPFDevelopers
             var theme = isDarkMode == true ? ThemeType.Dark : ThemeType.Light;
             if (Theme != theme)
                 Theme = theme;
-        }
-
-        bool IsWindows10OrLater()
-        {
-            using (RegistryKey key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion"))
-            {
-                object value = key?.GetValue("CurrentMajorVersionNumber");
-                if (value != null && int.TryParse(value.ToString(), out int majorVersion))
-                {
-                    return majorVersion >= 10;
-                }
-            }
-            Version version = Environment.OSVersion.Version;
-            return version.Major >= 10;
         }
 
         private void OnUserPreferenceChanged(object sender, UserPreferenceChangedEventArgs e)

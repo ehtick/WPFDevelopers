@@ -27,19 +27,19 @@ namespace WPFDevelopers.Sample.ExampleViews
             if (pwd.Length < 4)
             {
                 SetGestureState(unlockType, GestureState.Error);
-                Message.PushDesktop("手势错误，最少 4 个节点!", MessageBoxImage.Error, true);
+                Toast.PushDesktop("手势错误，最少 4 个节点!", ToastImage.Error, true);
                 return;
             }
 
             if (pwd != _password)
             {
                 SetGestureState(unlockType, GestureState.Error);
-                Message.PushDesktop("手势错误，请重新解锁!", MessageBoxImage.Error, true);
+                Toast.PushDesktop("手势错误，请重新解锁!", ToastImage.Error, true);
                 return;
             }
 
             SetGestureState(unlockType, GestureState.Success);
-            Message.Push("手势正确!", MessageBoxImage.Information, true);
+            Toast.Push("手势正确!", ToastImage.Success, true);
         }
 
         private void SetGestureState(GestureUnlockType unlockType, GestureState state)

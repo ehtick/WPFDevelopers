@@ -4,24 +4,24 @@ using System.Windows.Media;
 
 namespace WPFDevelopers.Controls
 {
-    public class MessageAdorner : Adorner
+    public class ToastAdorner : Adorner
     {
-        private MessageListBox _listBox;
+        private ToastListBox _listBox;
         private UIElement _child;
         private FrameworkElement _adornedElement;
         internal Position Position = Position.Top;
-        public MessageAdorner(UIElement adornedElement) : base(adornedElement)
+        public ToastAdorner(UIElement adornedElement) : base(adornedElement)
         {
             _adornedElement = adornedElement as FrameworkElement;
         }
-        internal void Push(string message, MessageBoxImage type = MessageBoxImage.Information, bool center = false)
+        internal void Push(string message, ToastImage type = ToastImage.Info, bool center = false)
         {
             if (_listBox == null)
             {
-                _listBox = new MessageListBox();
+                _listBox = new ToastListBox();
                 Child = _listBox;
             }
-            var mItem = new MessageListBoxItem { Content = message, MessageType = type, IsCenter = center };
+            var mItem = new ToastListBoxItem { Content = message, ToastType = type, IsCenter = center };
             _listBox.Items.Insert(0, mItem);
         }
         internal void Clear()

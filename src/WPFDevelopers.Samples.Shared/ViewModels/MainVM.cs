@@ -336,8 +336,8 @@ namespace WPFDevelopers.Samples.ViewModels
                 case MenuEnum.Badge:
                     ControlPanel = new BadgeExample();
                     break;
-                case MenuEnum.Message:
-                    ControlPanel = new MessageExample();
+                case MenuEnum.Toast:
+                    ControlPanel = new ToastExample();
                     break;
                 case MenuEnum.PathIcon:
                     ControlPanel = new PathIconExample();
@@ -396,6 +396,15 @@ namespace WPFDevelopers.Samples.ViewModels
                     break;
                 case MenuEnum.AllPathIcon:
                     ControlPanel = new AllPathIconExample();
+                    break;
+                case MenuEnum.Dial:
+                    ControlPanel = new DialExample();
+                    break;
+                case MenuEnum.SvgViewer:
+                    ControlPanel = new SvgViewerExample();
+                    break;
+                case MenuEnum.DataGridFilter:
+                    ControlPanel = new DataGridFilterExample();
                     break;
                 case MenuEnum.VirtualizingWrapPanel:
                     ControlPanel = new VirtualizingWrapPanel();

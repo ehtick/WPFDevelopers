@@ -89,7 +89,7 @@ namespace WPFDevelopers.Samples.ExampleViews
         void SetClipboard(string text)
         {
             Clipboard.SetText(text);
-            Message.Push("已复制剪切板");
+            Toast.Push("已复制剪切板");
         }
     }
 }

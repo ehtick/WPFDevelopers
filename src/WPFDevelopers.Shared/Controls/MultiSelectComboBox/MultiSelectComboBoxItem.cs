@@ -65,7 +65,6 @@ namespace WPFDevelopers.Controls
             {
                 IsSelected = !IsSelected;
             }
-            //IsSelected = !IsSelected;
             e.Handled = true;
         }
 

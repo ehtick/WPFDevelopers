@@ -1,5 +1,7 @@
-﻿using System.Windows;
-using System.Windows.Documents;
+﻿using System.Collections.Generic;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Media;
 using WPFDevelopers.Helpers;
 using WPFDevelopers.Utilities;
@@ -10,6 +12,9 @@ namespace WPFDevelopers.Controls
     {
         private const short SIZE = 25;
         private const double MINSIZE = 40;
+
+        private static readonly Dictionary<UIElement, Grid> _wrapperMap = new Dictionary<UIElement, Grid>();
+        private static readonly Dictionary<UIElement, UIElement> _loadingMap = new Dictionary<UIElement, UIElement>();
 
         public static readonly DependencyProperty IsShowProperty =
             DependencyProperty.RegisterAttached("IsShow", typeof(bool), typeof(Loading),
@@ -47,19 +52,11 @@ namespace WPFDevelopers.Controls
                     return;
                 }
 
-                var layer = AdornerLayer.GetAdornerLayer(element);
-                if (layer != null)
+                if (_loadingMap.TryGetValue(element, out var loadingElement) &&
+                    loadingElement is ProgressLoading progressLoading)
                 {
-                    var adorners = layer.GetAdorners(element);
-                    if (adorners != null)
-                        foreach (var adorner in adorners)
-                            if (adorner is AdornerContainer container &&
-                                container.Child is MaskControl maskControl &&
-                                maskControl.Content is ProgressLoading progressLoading)
-                            {
-                                var value = newValue / 100.0 * 360;
-                                progressLoading.Value = value;
-                            }
+                    var value = newValue / 100.0 * 360;
+                    progressLoading.Value = value;
                 }
             }
         }
@@ -114,28 +111,24 @@ namespace WPFDevelopers.Controls
         private static void CreateLoading(UIElement uIElement, bool isRemove = false)
         {
             if (uIElement == null) return;
-            UIElement value = null;
-            var layer = AdornerLayer.GetAdornerLayer(uIElement);
-            if (layer == null) return;
-            var adorners = layer.GetAdorners(uIElement);
-            if (adorners != null)
-                foreach (var item in adorners)
-                    if (item is AdornerContainer container)
-                    {
-                        if (isRemove)
-                            SetChild(uIElement, null);
-                        container.Child = null;
-                        layer.Remove(container);
-                    }
 
             if (isRemove)
+            {
+                UnwrapElement(uIElement);
                 return;
-            var adornerContainer = new AdornerContainer(uIElement);
+            }
+
+            if (_wrapperMap.ContainsKey(uIElement))
+                return;
+
             var type = GetLoadingType(uIElement);
             var isLoading = GetIsShow(uIElement);
             if (!isLoading) return;
-            var w = (double) uIElement.GetValue(ActualWidthProperty);
-            var h = (double) uIElement.GetValue(ActualHeightProperty);
+
+            UIElement value = null;
+            var w = (double) uIElement.GetValue(FrameworkElement.ActualWidthProperty);
+            var h = (double) uIElement.GetValue(FrameworkElement.ActualHeightProperty);
+
             switch (type)
             {
                 case LoadingType.Default:
@@ -187,17 +180,177 @@ namespace WPFDevelopers.Controls
                     break;
             }
 
-            if (value != null)
+            if (value == null)
+                return;
+
+            WrapElement(uIElement, value);
+        }
+
+        private static void WrapElement(UIElement target, UIElement loadingContent)
+        {
+            var parent = VisualTreeHelper.GetParent(target);
+            if (parent == null)
+                return;
+
+            var cornerRadius = ElementHelper.GetCornerRadius(target);
+            var mask = new MaskControl(target)
             {
-                var cornerRadius = ElementHelper.GetCornerRadius(uIElement);
-                adornerContainer.Child = new MaskControl(uIElement)
+                Content = loadingContent,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = VerticalAlignment.Stretch,
+                Visibility = Visibility.Visible
+            };
+
+            mask.SetBinding(MaskControl.CornerRadiusProperty, new Binding
+            {
+                Path = new PropertyPath("(0)", ElementHelper.CornerRadiusProperty),
+                Source = target
+            });
+
+            var grid = new Grid();
+            if (target is FrameworkElement fe)
+            {
+                grid.HorizontalAlignment = fe.HorizontalAlignment;
+                grid.VerticalAlignment = fe.VerticalAlignment;
+                grid.Margin = fe.Margin;
+
+                if (parent is Grid parentGrid)
                 {
-                    CornerRadius = cornerRadius,
-                    Content = value
+                    Grid.SetRow(grid, Grid.GetRow(fe));
+                    Grid.SetColumn(grid, Grid.GetColumn(fe));
+                    Grid.SetRowSpan(grid, Grid.GetRowSpan(fe));
+                    Grid.SetColumnSpan(grid, Grid.GetColumnSpan(fe));
+                }
+
+                if (!double.IsNaN(fe.Width)) grid.Width = fe.Width;
+                if (!double.IsNaN(fe.Height)) grid.Height = fe.Height;
+                if (!double.IsNaN(fe.MinWidth)) grid.MinWidth = fe.MinWidth;
+                if (!double.IsNaN(fe.MinHeight)) grid.MinHeight = fe.MinHeight;
+                if (!double.IsNaN(fe.MaxWidth)) grid.MaxWidth = fe.MaxWidth;
+                if (!double.IsNaN(fe.MaxHeight)) grid.MaxHeight = fe.MaxHeight;
+
+                fe.HorizontalAlignment = HorizontalAlignment.Stretch;
+                fe.VerticalAlignment = VerticalAlignment.Stretch;
+                fe.Margin = new Thickness();
+            }
+            _wrapperMap[target] = grid;
+            _loadingMap[target] = mask;
+            if (cornerRadius != new CornerRadius(0))
+            {
+                var clip = new RectangleGeometry
+                {
+                    Rect = new Rect(0, 0, grid.ActualWidth, grid.ActualHeight),
+                    RadiusX = cornerRadius.TopLeft,
+                    RadiusY = cornerRadius.TopLeft
                 };
+                grid.Clip = clip;
+            }
+            grid.SizeChanged += (s, e) =>
+            {
+                var cr = ElementHelper.GetCornerRadius(target);
+                var clip = grid.Clip as RectangleGeometry;
+                if (cr != new CornerRadius(0))
+                {
+                    if (clip == null)
+                    {
+                        clip = new RectangleGeometry();
+                        grid.Clip = clip;
+                    }
+                    clip.Rect = new Rect(0, 0, grid.ActualWidth, grid.ActualHeight);
+                    clip.RadiusX = cr.TopLeft;
+                    clip.RadiusY = cr.TopLeft;
+                }
+                else if (clip != null)
+                {
+                    grid.Clip = null;
+                }
+            };
+
+            if (parent is Panel panel)
+            {
+                var index = panel.Children.IndexOf(target);
+                if (index < 0) return;
+                panel.Children.RemoveAt(index);
+                grid.Children.Add(target);
+                grid.Children.Add(mask);
+                panel.Children.Insert(index, grid);
+            }
+            else if (parent is Decorator decorator)
+            {
+                if (decorator.Child != target) return;
+                decorator.Child = null;
+                grid.Children.Add(target);
+                grid.Children.Add(mask);
+                decorator.Child = grid;
+            }
+            else if (parent is ContentControl contentControl)
+            {
+                if (contentControl.Content != target) return;
+                contentControl.Content = null;
+                grid.Children.Add(target);
+                grid.Children.Add(mask);
+                contentControl.Content = grid;
+            }
+            else
+            {
+                _wrapperMap.Remove(target);
+                _loadingMap.Remove(target);
+                return;
+            }
+        }
+
+        private static void UnwrapElement(UIElement target)
+        {
+            if (!_wrapperMap.TryGetValue(target, out var grid))
+                return;
+
+            var parent = VisualTreeHelper.GetParent(grid);
+            if (parent == null)
+                return;
+
+            grid.Children.Remove(target);
+
+            if (target is FrameworkElement fe)
+            {
+                fe.HorizontalAlignment = grid.HorizontalAlignment;
+                fe.VerticalAlignment = grid.VerticalAlignment;
+                fe.Margin = grid.Margin;
+                if (!double.IsNaN(grid.Width)) fe.Width = grid.Width;
+                if (!double.IsNaN(grid.Height)) fe.Height = grid.Height;
+                if (!double.IsNaN(grid.MinWidth)) fe.MinWidth = grid.MinWidth;
+                if (!double.IsNaN(grid.MinHeight)) fe.MinHeight = grid.MinHeight;
+                if (!double.IsNaN(grid.MaxWidth)) fe.MaxWidth = grid.MaxWidth;
+                if (!double.IsNaN(grid.MaxHeight)) fe.MaxHeight = grid.MaxHeight;
+
+                if (parent is Grid parentGrid)
+                {
+                    Grid.SetRow(fe, Grid.GetRow(grid));
+                    Grid.SetColumn(fe, Grid.GetColumn(grid));
+                    Grid.SetRowSpan(fe, Grid.GetRowSpan(grid));
+                    Grid.SetColumnSpan(fe, Grid.GetColumnSpan(grid));
+                }
             }
 
-            layer.Add(adornerContainer);
+            if (parent is Panel panel)
+            {
+                var index = panel.Children.IndexOf(grid);
+                if (index < 0) return;
+                panel.Children.RemoveAt(index);
+                panel.Children.Insert(index, target);
+            }
+            else if (parent is Decorator decorator)
+            {
+                if (decorator.Child != grid) return;
+                decorator.Child = target;
+            }
+            else if (parent is ContentControl contentControl)
+            {
+                if (contentControl.Content != grid) return;
+                contentControl.Content = target;
+            }
+
+            _wrapperMap.Remove(target);
+            _loadingMap.Remove(target);
         }
 
         public static bool GetIsShow(DependencyObject obj)
