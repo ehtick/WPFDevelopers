@@ -89,6 +89,22 @@ xmlns:wd="https://github.com/WPFDevelopersOrg/WPFDevelopers"
 
 <img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/DataGridFilter.gif"/>   
 
+----------
+### SvgViewer
+
+<img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/SvgViewer.gif"/>   
+
+----------
+### Dial
+
+<img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/Dial.gif"/>   
+
+----------
+### AllPath
+
+<img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/AllPath.gif"/>   
+
+----------
 ### AnimatedGrid
 
 <img src="https://github.com/WPFDevelopersOrg/ResourcesCache/raw/main/resources/WPFDevelopersResource/AnimatedGrid.gif"/>   
