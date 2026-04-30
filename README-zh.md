@@ -8,7 +8,7 @@
         <img alt="nuget-version" src="https://img.shields.io/nuget/vpre/WPFDevelopers"></img>
     </a>  [![Github stars](https://img.shields.io/github/stars/yanjinhuagood/WPFDevelopers)](https://github.com/yanjinhuagood/WPFDevelopers/stargazers)	 ![Downloads](https://img.shields.io/nuget/dt/WPFDevelopers?color=%23409EF)  <a href="resources/WPFDevelopersResource/WPFDevelopers.vsix">
         <img alt=".NET6VSIX" src="https://img.shields.io/badge/.NET6-VSIX-ff69b4"></img>
-    </a>  ![star](https://atomgit.com/WPFDevelopersOrg/WPFDevelopers/star/badge.svg)
+    </a>  
 
 
 
@@ -22,39 +22,27 @@
 
 ### [Github](https://github.com/WPFDevelopersOrg) https://github.com/WPFDevelopersOrg  
 
-### [Gitee](https://gitee.com/WPFDevelopersOrg) https://gitee.com/WPFDevelopersOrg  
+### [码云](https://gitee.com/WPFDevelopersOrg) https://gitee.com/WPFDevelopersOrg  
 
-### [AtomGit](https://atomgit.com/WPFDevelopersOrg/WPFDevelopers) https://atomgit.com/WPFDevelopersOrg/WPFDevelopers  
-
-### [ Wiki→ 正在进行快速更新](https://gitee.com/WPFDevelopersOrg/WPFDevelopers/wikis/pages)   
+### [ 文档中心 → 快速开始](docs/zh/getting-started.md)   
 
 ### 此项目包含了 微信公众号 《 WPF开发者》 日常开发分享，欢迎<kbd>Star</kbd>。   
 
-### 运行环境 Visual Studio Insiders  
+### 运行环境 Visual Studio 2022  
 
 ### .Net Version
 |  .Net Version   | Status  |
 |  ----  | ----  |
 | net40  | ✅ |
 | net45  | ✅ |
-| net451  | ✅ |
-| net452  | ✅ |
 | net46  | ✅ |
-| net461  | ✅ |
-| net462  | ✅ |
 | net47  | ✅ |
-| net471  | ✅ |
-| net472  | ✅ |
 | net48  | ✅ |
-| net481  | ✅ |
 | netcoreapp3.0  | ✅ |
-| netcoreapp3.1  | ✅ |
 | net5.0-windows  | ✅ |
 | net6.0-windows  | ✅ |
 | net7.0-windows  | ✅ |
 | net8.0-windows  | ✅ |
-| net9.0-windows  | ✅ |
-| net10.0-windows  | ✅ |
 
 ### 欢迎关注微信公众号  
 
@@ -67,13 +55,6 @@
 ### 贡献者  
 <a href="https://github.com/yanjinhuagood" target="_blank"><img style="border-radius:50%!important" width="64px" alt="ChisterWu" src="https://avatars.githubusercontent.com/u/23089734?v=4"></a>
 <a href="https://github.com/ChisterWu" target="_blank"><img style="border-radius:50%!important" width="64px" alt="ChisterWu" src="https://avatars.githubusercontent.com/u/28770378?v=4"></a>  <a href="https://github.com/huangjia2107" target="_blank"><img style="border-radius:50%!important" width="64px" alt="huangjia2107" src="https://avatars.githubusercontent.com/u/13675358?v=4"></a>  <a href="https://github.com/liukaishuang" target="_blank"><img style="border-radius:50%!important" width="64px" alt="liukaishuang" src="https://avatars.githubusercontent.com/u/25221289?v=4"></a>  <a href="https://github.com/TwilightLemon" target="_blank"><img style="border-radius:50%!important" width="64px" alt="TwilightLemon" src="https://avatars.githubusercontent.com/u/25076044?v=4"></a>    <a href="https://github.com/githowe" target="_blank"><img style="border-radius:50%!important" width="64px" alt="githowe" src="https://avatars.githubusercontent.com/u/31241366?v=4"></a>  <a href="https://github.com/LuGuangguang" target="_blank"><img style="border-radius:50%!important" width="64px" alt="LuGuangguang" src="https://avatars.githubusercontent.com/u/34500722?v=4"></a>  <a href="https://github.com/DinoChan" target="_blank"><img style="border-radius:50%!important" width="64px" alt="DinoChan" src="https://avatars.githubusercontent.com/u/6076257?v=4"></a>  <a href="https://github.com/mingyaodagege" target="_blank"><img style="border-radius:50%!important" width="64px" alt="mingyaodagege" src="https://avatars.githubusercontent.com/u/48346030?v=4"></a>  <a href="https://github.com/SFlyers" target="_blank"><img style="border-radius:50%!important" width="64px" alt="PettyHandSome" src="https://avatars.githubusercontent.com/u/16127328?v=4"></a>  <a href="https://github.com/choumengqizhigou" target="_blank"><img style="border-radius:50%!important" width="64px" alt="丑萌气质狗" src="https://avatars.githubusercontent.com/u/19163316?v=4"></a>   <a href="https://github.com/ptddqr" target="_blank"><img style="border-radius:50%!important" width="64px" alt="李伟" src="https://avatars.githubusercontent.com/u/24642606?v=4"></a>  <a href="https://github.com/SwaggyMacro" target="_blank"><img style="border-radius:50%!important" width="64px" alt="SwaggyMacro" src="https://avatars.githubusercontent.com/u/38845682?v=4"></a>  <a href="https://github.com/sw554227643" target="_blank"><img style="border-radius:50%!important" width="64px" alt="Archer" src="https://avatars.githubusercontent.com/u/44052801?v=4"></a>
-
-### 特别鸣谢
-
-| 贡献者 | 贡献 |
-| :--- | :--- |
-| [@HaHa-ZYK](https://github.com/HaHa-ZYK) | **项目质量守护者** :shield: - 感谢你持续提交了大量极其宝贵且高质量的 Issue，你的细致观察力是项目稳定的基石。 |
-| [@wanghaodong24](https://github.com/wanghaodong24) | 感谢你持续提交了大量宝贵的 Issue |
 
 ### 捐助
 如果您觉得我们的开源软件对你有所帮助，请扫下方二维码打赏我们一杯咖啡。
@@ -93,7 +74,7 @@ Install-Package WPFDevelopers
 ``` XML
 xmlns:wd="https://github.com/WPFDevelopersOrg/WPFDevelopers"
 ```
-#### 
+#### 1.1.0.3-preview1 以上版本
 ``` XML
     <Application.Resources>
         <ResourceDictionary>
@@ -104,6 +85,19 @@ xmlns:wd="https://github.com/WPFDevelopersOrg/WPFDevelopers"
                               若要手动设置为 Light 模式，可以使用 Theme="Light"。
                               你还可以自定义主题色，使用 Color="Fuchsia"（例如设置为 Fuchsia）-->
  		     <wd:Resources />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Application.Resources>
+```
+#### 1.1.0.3-preview1 以下版本
+``` XML
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                    <ResourceDictionary Source="pack://application:,,,/WPFDevelopers;component/Themes/Light.Blue.xaml"/>
+                    <!--需要注意 wd:Resources 必须在配色主题后，Theme="Dark" 为黑色皮肤-->
+                    <wd:Resources Theme="Light"/>
+                    <ResourceDictionary Source="pack://application:,,,/WPFDevelopers;component/Themes/Theme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
@@ -123,31 +117,6 @@ xmlns:wd="https://github.com/WPFDevelopersOrg/WPFDevelopers"
 <img src="https://gitee.com/WPFDevelopersOrg/MarkDownBlog/raw/master/resources/WPFDevelopersResource/BasicControls02.gif"/>    
 <img src="https://gitee.com/WPFDevelopersOrg/MarkDownBlog/raw/master/resources/WPFDevelopersResource/BasicControls03.gif"/>    
 <img src="https://gitee.com/WPFDevelopersOrg/MarkDownBlog/raw/master/resources/WPFDevelopersResource/BasicControls04.gif"/>    
-
-----------
-### SvgViewer
-
-<img src="https://gitee.com/WPFDevelopersOrg/MarkDownBlog/raw/master/resources/WPFDevelopersResource/SvgViewer.jpg"/>   
-
-----------
-### Dial‎
-
-<img src="https://gitee.com/WPFDevelopersOrg/MarkDownBlog/raw/master/resources/WPFDevelopersResource/Dial.jpg"/>   
-
-----------
-### ScreenCaptureExt
-
-<img src="https://gitee.com/WPFDevelopersOrg/MarkDownBlog/raw/master/resources/WPFDevelopersResource/ScreenCaptureExt.jpg"/>   
-
-----------
-### MultiSelectComboBox
-
-<img src="https://gitee.com/WPFDevelopersOrg/MarkDownBlog/raw/master/resources/WPFDevelopersResource/MultiSelectComboBox.jpg"/>   
-
-----------
-### PathIcon‎
-
-<img src="https://gitee.com/WPFDevelopersOrg/MarkDownBlog/raw/master/resources/WPFDevelopersResource/PathIcon.jpg"/>   
 
 ----------
 ### AnimatedGrid
